@@ -1,0 +1,17 @@
+// Project tasks configuration. See https://zed.dev/docs/tasks for documentation.
+//
+// Example:
+[
+  {
+    "label": "Open Lazygit",
+    "command": "kitty --directory={workspaceFolder} lazygit",
+    "reveal": "never",
+    "hide": "always"
+  },
+  {
+    "label": "Open Lazydocker",
+    "command": "kitty --directory={workspaceFolder} lazydocker",
+    "reveal": "never",
+    "hide": "always"
+  }
+]

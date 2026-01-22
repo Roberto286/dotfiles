@@ -1,0 +1,62 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    "bindings": {
+      // "shift shift": "file_finder::Toggle",
+      "ctrl-l": [
+        "task::Spawn",
+        {
+          "task_name": "Open Lazygit",
+          "target": "center"
+        }
+      ],
+      "ctrl-d": [
+        "task::Spawn",
+        {
+          "task_name": "Open Lazydocker",
+          "target": "center"
+        }
+      ],
+      "f1": "command_palette::Toggle"
+    }
+  },
+  {
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      // "j k": "vim::NormalBefore"
+    }
+  },
+  {
+    "context": "Editor && vim_mode == normal",
+    "bindings": {
+      "space l g": [
+        "task::Spawn",
+        {
+          "task_name": "Open Lazygit"
+        }
+      ],
+      "space f": "file_finder::Toggle",
+      "space p": "command_palette::Toggle",
+      "space e": "project_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "Pane",
+    "bindings": {
+      "ctrl-shift-tab": "pane::ActivatePreviousItem",
+      "ctrl-tab": "pane::ActivateNextItem"
+    }
+  },
+  {
+    "context": "vim_mode == visual",
+    "bindings": {
+      "shift-s": "vim::PushAddSurrounds"
+    }
+  }
+]
