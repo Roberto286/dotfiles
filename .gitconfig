@@ -1,0 +1,13 @@
+[user]
+	email = roberto.saliola96@gmail.com
+	name = Roberto Saliola
+[pull]
+	rebase = true
+[core]
+	autocrlf = input
+[push]
+	autoSetupRemote = true
+[includeIf "gitdir:~/code/personal/"]
+    path = ~/.gitconfig-personal
+[init]
+	defaultBranch = main
