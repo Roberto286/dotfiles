@@ -16,8 +16,6 @@ if not string match -q -- $PNPM_HOME $PATH
 end
 # pnpm end
 
-zoxide init fish | source
-
 # Alias
 alias cd z
 alias lg lazygit
@@ -34,3 +32,8 @@ function pyenv;
 
     pyenv "$argv"
 ; end
+
+# Plugin config
+fish_config theme choose "Catppuccin Mocha"
+zoxide init fish | source
+
