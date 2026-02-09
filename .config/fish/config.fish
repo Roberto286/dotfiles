@@ -1,6 +1,11 @@
 if status is-interactive
     # Commands to run in interactive sessions can go here
 end
+
+if not type -q fisher
+    echo "⚠️ fisher not installed. Run bootstrap script."
+end
+
 set -g fish_greeting ""
 
 
