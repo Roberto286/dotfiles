@@ -17,7 +17,6 @@ end
 # pnpm end
 
 # Alias
-alias cd z
 alias lg lazygit
 alias ld lazydocker
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
@@ -35,5 +34,3 @@ function pyenv;
 
 # Plugin config
 fish_config theme choose "Catppuccin Mocha"
-zoxide init fish | source
-
