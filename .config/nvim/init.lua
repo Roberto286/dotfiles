@@ -61,3 +61,8 @@ map("i", "<Down>",  no_arrows_msg("giù",  "j"), { noremap = true })
 map("i", "<Left>",  no_arrows_msg("a sinistra", "h"), { noremap = true })
 map("i", "<Right>", no_arrows_msg("a destra",   "l"), { noremap = true })
 
+-- Plugins
+vim.pack.add({
+'https://github.com/nvim-mini/mini.pairs' -- Auto pair
+})
+require('mini.pairs').setup()

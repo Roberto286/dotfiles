@@ -1,0 +1,8 @@
+{
+  "plugins": {
+    "mini.pairs": {
+      "rev": "4089aa6ea6423e02e1a8326a7a7a00159f6f5e04",
+      "src": "https://github.com/nvim-mini/mini.pairs"
+    }
+  }
+}
