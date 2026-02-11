@@ -55,14 +55,16 @@ map("n", "<Down>",  no_arrows_msg("giù",  "j"), { noremap = true })
 map("n", "<Left>",  no_arrows_msg("a sinistra", "h"), { noremap = true })
 map("n", "<Right>", no_arrows_msg("a destra",   "l"), { noremap = true })
 
--- Insert mode (ti riporta anche in normal mentalmente)
-map("i", "<Up>",    no_arrows_msg("su",   "k"), { noremap = true })
-map("i", "<Down>",  no_arrows_msg("giù",  "j"), { noremap = true })
-map("i", "<Left>",  no_arrows_msg("a sinistra", "h"), { noremap = true })
-map("i", "<Right>", no_arrows_msg("a destra",   "l"), { noremap = true })
+-- Insert mode (ti riporta anche in normal mentalmente) per il momento commentato perché non mi ci trovo
+--map("i", "<Up>",    no_arrows_msg("su",   "k"), { noremap = true })
+--map("i", "<Down>",  no_arrows_msg("giù",  "j"), { noremap = true })
+--map("i", "<Left>",  no_arrows_msg("a sinistra", "h"), { noremap = true })
+--map("i", "<Right>", no_arrows_msg("a destra",   "l"), { noremap = true })
 
 -- Plugins
 vim.pack.add({
-'https://github.com/nvim-mini/mini.pairs' -- Auto pair
+'https://github.com/nvim-mini/mini.pairs', -- Auto pair
+'https://github.com/folke/tokyonight.nvim' -- Tokyonight theme
 })
 require('mini.pairs').setup()
+vim.cmd.colorscheme("tokyonight")
