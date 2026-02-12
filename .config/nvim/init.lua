@@ -4,6 +4,7 @@ vim.opt.number = true                 -- Numeri di riga assoluti
 vim.opt.relativenumber = true         -- Numeri relativi per movimenti rapidi
 vim.opt.statuscolumn = "%s %l %r "    -- Colonna status minimale (segni + linea)
 vim.g.mapleader = " "                 -- Leader su Space
+vim.opt.showmatch = true	      -- Evidenzia la parentesi/apice di chiusura 
 
 local defaults = { noremap = true, silent = true }
 local map = vim.keymap.set
@@ -64,7 +65,9 @@ map("n", "<Right>", no_arrows_msg("a destra",   "l"), { noremap = true })
 -- Plugins
 vim.pack.add({
 'https://github.com/nvim-mini/mini.pairs', -- Auto pair
-'https://github.com/folke/tokyonight.nvim' -- Tokyonight theme
+'https://github.com/folke/tokyonight.nvim', -- Tokyonight theme
+'https://github.com/lukas-reineke/indent-blankline.nvim'      -- Indentation guides
 })
 require('mini.pairs').setup()
 vim.cmd.colorscheme("tokyonight")
+require('ibl').setup()
