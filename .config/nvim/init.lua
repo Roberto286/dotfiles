@@ -11,7 +11,6 @@ vim.opt.showmatch = true
 
 local map = vim.keymap.set
 local defaults = {noremap = true, silent = true}
-local fzf = require("fzf-lua")
 
 -- Helper per aggiungere desc senza ripetere defaults
 local function with_desc(desc)
@@ -41,13 +40,13 @@ map("n", "<Leader>q", ":q<CR>", with_desc("Chiudi finestra"))
 
 map("n", "<Leader>e", ":Explore<CR>", with_desc("Apri file explorer (netrw)"))
 
-map("n", "<leader>ff", fzf.files,
+map("n", "<leader>ff", function() require('fzf-lua').files() end,
   with_desc("Find files"))
 
-map("n", "<leader>fg", fzf.live_grep,
+map("n", "<leader>fg", function() require('fzf-lua').live_grep() end,
   with_desc("Live grep"))
 
-map("n", "<leader>fb", fzf.buffers,
+map("n", "<leader>fb", function() require('fzf-lua').buffers() end,
   with_desc("Find buffers"))
 
 
@@ -83,40 +82,41 @@ map("n", "<Right>", no_arrows_msg("a destra", "l"), with_desc("Disabilita frecci
 
 
 -- Plugins -------------------------------------------------------------------
+local gh = function(name) return "https://github.com/" .. name end
 
 -- Tabella dei plugin
 local plugins = {
   {
-    name = "https://github.com/nvim-mini/mini.pairs",
-    config = function() require("mini.pairs").setup() end,
+    repo = gh("nvim-mini/mini.pairs"),
+    callback = function() require("mini.pairs").setup() end,
   },
   {
-    name = "https://github.com/folke/tokyonight.nvim",
-    config = function() vim.cmd.colorscheme("tokyonight") end,
+    repo = gh("folke/tokyonight.nvim"),
+    callback = function() vim.cmd.colorscheme("tokyonight") end,
   },
   {
-    name = "https://github.com/lukas-reineke/indent-blankline.nvim",
-    config = function() require('ibl').setup() end,
+    repo = gh("lukas-reineke/indent-blankline.nvim"),
+    callback = function() require('ibl').setup() end,
   },
   {
-    name = "https://github.com/folke/which-key.nvim",
-    config = function() require("which-key").setup({}) end,
+    repo = gh("folke/which-key.nvim"),
+    callback = function() require("which-key").setup({}) end,
   },
   {
-    name = "https://github.com/nvim-mini/mini.icons",
-    config = function() require('mini.icons').setup() end,
+    repo = gh("nvim-mini/mini.icons"),
+    callback = function() require('mini.icons').setup() end,
   },
   {
-    name = 'https://github.com/ibhagwan/fzf-lua',
-    config = nil
+    repo = gh("ibhagwan/fzf-lua"),
+    callback = function() require('fzf-lua').setup() end, 
   }
 }
 
 -- Ciclo su tutti i plugin
 for _, plugin in ipairs(plugins) do
-  vim.pack.add({ plugin.name })
-  if plugin.config then
-    plugin.config()
+  vim.pack.add({ plugin.repo })
+  if plugin.callback then
+    plugin.callback()
   end
 end
 
