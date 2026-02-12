@@ -1,8 +1,16 @@
 {
   "plugins": {
+    "fzf-lua": {
+      "rev": "fb8c50ba62a0daa433b7ac2b78834f318322b879",
+      "src": "https://github.com/ibhagwan/fzf-lua"
+    },
     "indent-blankline.nvim": {
       "rev": "005b56001b2cb30bfa61b7986bc50657816ba4ba",
       "src": "https://github.com/lukas-reineke/indent-blankline.nvim"
+    },
+    "mini.icons": {
+      "rev": "efc85e42262cd0c9e1fdbf806c25cb0be6de115c",
+      "src": "https://github.com/nvim-mini/mini.icons"
     },
     "mini.pairs": {
       "rev": "4089aa6ea6423e02e1a8326a7a7a00159f6f5e04",

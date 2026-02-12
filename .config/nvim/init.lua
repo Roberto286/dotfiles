@@ -70,18 +70,42 @@ map("n", "<Left>", no_arrows_msg("a sinistra", "h"), with_desc("Disabilita frecc
 
 map("n", "<Right>", no_arrows_msg("a destra", "l"), with_desc("Disabilita freccia →"))
 
+
 -- Plugins -------------------------------------------------------------------
 
-vim.pack.add(
-    {
-        "https://github.com/nvim-mini/mini.pairs",
-        "https://github.com/folke/tokyonight.nvim",
-        "https://github.com/lukas-reineke/indent-blankline.nvim",
-        "https://github.com/folke/which-key.nvim"
-    }
-)
+-- Tabella dei plugin
+local plugins = {
+  {
+    name = "https://github.com/nvim-mini/mini.pairs",
+    config = function() require("mini.pairs").setup() end,
+  },
+  {
+    name = "https://github.com/folke/tokyonight.nvim",
+    config = function() vim.cmd.colorscheme("tokyonight") end,
+  },
+  {
+    name = "https://github.com/lukas-reineke/indent-blankline.nvim",
+    config = function() require('ibl').setup() end,
+  },
+  {
+    name = "https://github.com/folke/which-key.nvim",
+    config = function() require("which-key").setup({}) end,
+  },
+  {
+    name = "https://github.com/nvim-mini/mini.icons",
+    config = function() require('mini.icons').setup() end,
+  },
+  {
+    name = 'https://github.com/ibhagwan/fzf-lua',
+    config = nil
+  }
+}
 
-require("mini.pairs").setup()
-vim.cmd.colorscheme("tokyonight")
-require("ibl").setup()
+-- Ciclo su tutti i plugin
+for _, plugin in ipairs(plugins) do
+  vim.pack.add({ plugin.name })
+  if plugin.config then
+    plugin.config()
+  end
+end
 
