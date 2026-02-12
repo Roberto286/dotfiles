@@ -11,6 +11,7 @@ vim.opt.showmatch = true
 
 local map = vim.keymap.set
 local defaults = {noremap = true, silent = true}
+local fzf = require("fzf-lua")
 
 -- Helper per aggiungere desc senza ripetere defaults
 local function with_desc(desc)
@@ -39,6 +40,16 @@ map("n", "<Leader>x", ":wq<CR>", with_desc("Salva e chiudi"))
 map("n", "<Leader>q", ":q<CR>", with_desc("Chiudi finestra"))
 
 map("n", "<Leader>e", ":Explore<CR>", with_desc("Apri file explorer (netrw)"))
+
+map("n", "<leader>ff", fzf.files,
+  with_desc("Find files"))
+
+map("n", "<leader>fg", fzf.live_grep,
+  with_desc("Live grep"))
+
+map("n", "<leader>fb", fzf.buffers,
+  with_desc("Find buffers"))
+
 
 -- Clipboard di sistema ------------------------------------------------------
 
