@@ -34,3 +34,8 @@ function pyenv;
 
 # Plugin config
 fish_config theme choose "Catppuccin Mocha"
+
+# Add ~/.local/bin to PATH
+if test -d "$HOME/.local/bin"
+    fish_add_path $HOME/.local/bin
+end
