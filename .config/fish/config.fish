@@ -39,3 +39,6 @@ fish_config theme choose "Catppuccin Mocha"
 if test -d "$HOME/.local/bin"
     fish_add_path $HOME/.local/bin
 end
+
+# opencode
+fish_add_path /Users/roberto.saliola/.opencode/bin

@@ -109,6 +109,26 @@ local plugins = {
   {
     repo = gh("ibhagwan/fzf-lua"),
     callback = function() require('fzf-lua').setup() end, 
+  },
+  {
+    repo = gh("nickjvandyke/opencode.nvim"),
+    callback = function()
+    map({"n", "x"}, "<C-a>", function() require("opencode").ask("@this: ", { submit = true }) end, with_desc("Ask opencode…"))
+    map({"n", "x"}, "<C-x>", function() require("opencode").select() end, with_desc("Execute opencode action…"))
+    map({"n", "t"}, "<C-.>", function() require("opencode").toggle() end, with_desc("Toggle opencode"))
+
+    map({"n", "x"}, "go", function() return require("opencode").operator("@this ") end,
+      vim.tbl_extend("force", defaults, {desc = "Add range to opencode", expr = true}))
+    map("n", "goo", function() return require("opencode").operator("@this ") .. "_" end,
+      vim.tbl_extend("force", defaults, {desc = "Add line to opencode", expr = true}))
+
+    map("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end, with_desc("Scroll opencode up"))
+    map("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, with_desc("Scroll opencode down"))
+
+    -- Remap increment/decrement dato che <C-a> e <C-x> sono usati da opencode
+    map("n", "+", "<C-a>", with_desc("Increment under cursor"))
+    map("n", "-", "<C-x>", with_desc("Decrement under cursor"))
+    		end
   }
 }
 
