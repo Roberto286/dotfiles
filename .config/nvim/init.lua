@@ -80,6 +80,29 @@ map("n", "<Left>", no_arrows_msg("a sinistra", "h"), with_desc("Disabilita frecc
 
 map("n", "<Right>", no_arrows_msg("a destra", "l"), with_desc("Disabilita freccia →"))
 
+-- OpenCode ------------------------------------------------------------------
+
+map({"n", "x"}, "<C-a>", function() require("opencode").ask("@this: ", { submit = true }) end, with_desc("Ask opencode…"))
+
+map({"n", "x"}, "<C-x>", function() require("opencode").select() end, with_desc("Execute opencode action…"))
+
+map({"n", "t"}, "<C-.>", function() require("opencode").toggle() end, with_desc("Toggle opencode"))
+
+map({"n", "x"}, "go", function() return require("opencode").operator("@this ") end,
+  vim.tbl_extend("force", defaults, {desc = "Add range to opencode", expr = true}))
+
+map("n", "goo", function() return require("opencode").operator("@this ") .. "_" end,
+  vim.tbl_extend("force", defaults, {desc = "Add line to opencode", expr = true}))
+
+map("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end, with_desc("Scroll opencode up"))
+
+map("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, with_desc("Scroll opencode down"))
+
+-- Remap increment/decrement dato che <C-a> e <C-x> sono usati da opencode
+map("n", "+", "<C-a>", with_desc("Increment under cursor"))
+
+map("n", "-", "<C-x>", with_desc("Decrement under cursor"))
+
 
 -- Plugins -------------------------------------------------------------------
 local gh = function(name) return "https://github.com/" .. name end
@@ -112,31 +135,19 @@ local plugins = {
   },
   {
     repo = gh("nickjvandyke/opencode.nvim"),
-    callback = function()
-    map({"n", "x"}, "<C-a>", function() require("opencode").ask("@this: ", { submit = true }) end, with_desc("Ask opencode…"))
-    map({"n", "x"}, "<C-x>", function() require("opencode").select() end, with_desc("Execute opencode action…"))
-    map({"n", "t"}, "<C-.>", function() require("opencode").toggle() end, with_desc("Toggle opencode"))
-
-    map({"n", "x"}, "go", function() return require("opencode").operator("@this ") end,
-      vim.tbl_extend("force", defaults, {desc = "Add range to opencode", expr = true}))
-    map("n", "goo", function() return require("opencode").operator("@this ") .. "_" end,
-      vim.tbl_extend("force", defaults, {desc = "Add line to opencode", expr = true}))
-
-    map("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end, with_desc("Scroll opencode up"))
-    map("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, with_desc("Scroll opencode down"))
-
-    -- Remap increment/decrement dato che <C-a> e <C-x> sono usati da opencode
-    map("n", "+", "<C-a>", with_desc("Increment under cursor"))
-    map("n", "-", "<C-x>", with_desc("Decrement under cursor"))
-    		end
   }
 }
 
 -- Ciclo su tutti i plugin
 for _, plugin in ipairs(plugins) do
-  vim.pack.add({ plugin.repo })
-  if plugin.callback then
-    plugin.callback()
+  local ok, err = pcall(vim.pack.add, { plugin.repo })
+  if not ok then
+    vim.notify("Errore caricamento " .. plugin.repo .. ": " .. err, vim.log.levels.WARN)
+  elseif plugin.callback then
+    ok, err = pcall(plugin.callback)
+    if not ok then
+      vim.notify("Errore setup " .. plugin.repo .. ": " .. err, vim.log.levels.WARN)
+    end
   end
 end
 
