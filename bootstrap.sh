@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-DOTFILES_REPO="https://github.com/Roberto286/dotfiles"
+DOTFILES_REPO="git@github.com:Roberto286/dotfiles.git"
 DOTFILES_DIR="$HOME/.dotfiles"
 
 # -----------------------------
