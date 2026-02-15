@@ -51,5 +51,5 @@ git clone --bare <REPO_URL> ~/.dotfiles
 ### 3. Setup automatizzato
 
 ```bash
-curl -sL https://gist.githubusercontent.com/Roberto286/dd3885059d1adb6c053c65671951a39c/raw/91feafcec9f25f220e02fc92dd383601ff82c022/bootstrap.sh | bash
+curl -sL [https://gist.githubusercontent.com/Roberto286/dd3885059d1adb6c053c65671951a39c/raw/91feafcec9f25f220e02fc92dd383601ff82c022/bootstrap.sh](https://raw.githubusercontent.com/Roberto286/dotfiles/refs/heads/master/bootstrap.sh) | bash
 ```
