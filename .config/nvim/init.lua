@@ -1,4 +1,3 @@
-
 -- Opzioni base --------------------------------------------------------------
 
 vim.opt.number = true
@@ -38,7 +37,7 @@ map("n", "<Leader>x", ":wq<CR>", with_desc("Salva e chiudi"))
 
 map("n", "<Leader>q", ":q<CR>", with_desc("Chiudi finestra"))
 
-map("n", "<Leader>e", ":Explore<CR>", with_desc("Apri file explorer (netrw)"))
+map("n", "<Leader>e", ":30 Lexplore<CR>", with_desc("Apri file explorer (netrw)"))
 
 map("n", "<leader>ff", function() require('fzf-lua').files() end,
   with_desc("Find files"))
