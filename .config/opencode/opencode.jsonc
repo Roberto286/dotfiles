@@ -1,5 +1,11 @@
 {
   "$schema": "https://opencode.ai/config.json",
     // Dinamyc context pruning
-    "plugin": ["@tarquinen/opencode-dcp@latest"]
+    "plugin": ["@tarquinen/opencode-dcp@latest"],
+    "mcp":{
+	    "context7":{
+		    "type": "local",
+		    "command": ["npx", "-y", "@upstash/context7-mcp", "--api-key", "ctx7sk-d397cdc8-1682-415b-801c-2cf4b97af827"]
+	    }
+    }
 }
