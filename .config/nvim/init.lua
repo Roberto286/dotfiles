@@ -37,7 +37,7 @@ map("n", "<Leader>x", ":wq<CR>", with_desc("Salva e chiudi"))
 
 map("n", "<Leader>q", ":q<CR>", with_desc("Chiudi finestra"))
 
-map("n", "<Leader>e", ":30 Lexplore<CR>", with_desc("Apri file explorer (netrw)"))
+map("n", "<Leader>e", ":50vsplit | Oil<CR>", with_desc("Apri file explorer (netrw)"))
 
 map("n", "<leader>ff", function() require('fzf-lua').files() end,
   with_desc("Find files"))
@@ -134,6 +134,18 @@ local plugins = {
   },
   {
     repo = gh("nickjvandyke/opencode.nvim"),
+  },
+  {
+    repo = gh("stevearc/oil.nvim"),
+    callback = function() require("oil").setup({
+	    win_options = {
+		    signcolumn = "yes:2", 
+	    }
+    }) end,
+  },
+  {
+	  repo = gh("refractalize/oil-git-status.nvim"),
+	  callback = function() require('oil-git-status').setup() end
   }
 }
 
