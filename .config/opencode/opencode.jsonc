@@ -1,11 +1,25 @@
 {
   "$schema": "https://opencode.ai/config.json",
-    // Dinamyc context pruning
-    "plugin": ["@tarquinen/opencode-dcp@latest"],
-    "mcp":{
-	    "context7":{
-		    "type": "local",
-		    "command": ["npx", "-y", "@upstash/context7-mcp", "--api-key", "ctx7sk-d397cdc8-1682-415b-801c-2cf4b97af827"]
-	    }
+  // Dinamyc context pruning
+  "plugin": ["@tarquinen/opencode-dcp@latest"],
+  "mcp":{
+    "context7":{
+      "type": "local",
+      "command": ["npx", "-y", "@upstash/context7-mcp", "--api-key", "ctx7sk-d397cdc8-1682-415b-801c-2cf4b97af827"]
     }
+  },
+  "agent": {
+    "code-reviewer": {
+      "description": "Reviews code for best practices, security, performance and potential issues using Claude Opus with maximum precision",
+      "mode": "subagent",
+      "model": "anthropic/claude-opus-4-20250514",
+      "temperature": 0.05,
+      "prompt": "You are an expert code reviewer with deep knowledge of software engineering best practices. Focus on: security vulnerabilities, performance optimization, code maintainability, potential bugs, design patterns, and adherence to language-specific conventions. Provide detailed, actionable feedback with specific examples and suggestions for improvement.",
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": false
+      }
+    }
+  }
 }

@@ -37,17 +37,34 @@ map("n", "<Leader>x", ":wq<CR>", with_desc("Salva e chiudi"))
 
 map("n", "<Leader>q", ":q<CR>", with_desc("Chiudi finestra"))
 
-map("n", "<Leader>e", ":50vsplit | Oil<CR>", with_desc("Apri file explorer (netrw)"))
+map("n", "<Leader>e", ":Oil --float<CR>", with_desc("Apri file explorer (Oil)"))
 
-map("n", "<leader>ff", function() require('fzf-lua').files() end,
-  with_desc("Find files"))
+map(
+    "n",
+    "<leader>ff",
+    function()
+        require("fzf-lua").files()
+    end,
+    with_desc("Find files")
+)
 
-map("n", "<leader>fg", function() require('fzf-lua').live_grep() end,
-  with_desc("Live grep"))
+map(
+    "n",
+    "<leader>fg",
+    function()
+        require("fzf-lua").live_grep()
+    end,
+    with_desc("Live grep")
+)
 
-map("n", "<leader>fb", function() require('fzf-lua').buffers() end,
-  with_desc("Find buffers"))
-
+map(
+    "n",
+    "<leader>fb",
+    function()
+        require("fzf-lua").buffers()
+    end,
+    with_desc("Find buffers")
+)
 
 -- Clipboard di sistema ------------------------------------------------------
 
@@ -81,84 +98,150 @@ map("n", "<Right>", no_arrows_msg("a destra", "l"), with_desc("Disabilita frecci
 
 -- OpenCode ------------------------------------------------------------------
 
-map({"n", "x"}, "<C-a>", function() require("opencode").ask("@this: ", { submit = true }) end, with_desc("Ask opencode…"))
+map(
+    {"n", "x"},
+    "<C-a>",
+    function()
+        require("opencode").ask("@this: ", {submit = true})
+    end,
+    with_desc("Ask opencode…")
+)
 
-map({"n", "x"}, "<C-x>", function() require("opencode").select() end, with_desc("Execute opencode action…"))
+map(
+    {"n", "x"},
+    "<C-x>",
+    function()
+        require("opencode").select()
+    end,
+    with_desc("Execute opencode action…")
+)
 
-map({"n", "t"}, "<C-.>", function() require("opencode").toggle() end, with_desc("Toggle opencode"))
+map(
+    {"n", "t"},
+    "<C-.>",
+    function()
+        require("opencode").toggle()
+    end,
+    with_desc("Toggle opencode")
+)
 
-map({"n", "x"}, "go", function() return require("opencode").operator("@this ") end,
-  vim.tbl_extend("force", defaults, {desc = "Add range to opencode", expr = true}))
+map(
+    {"n", "x"},
+    "go",
+    function()
+        return require("opencode").operator("@this ")
+    end,
+    vim.tbl_extend("force", defaults, {desc = "Add range to opencode", expr = true})
+)
 
-map("n", "goo", function() return require("opencode").operator("@this ") .. "_" end,
-  vim.tbl_extend("force", defaults, {desc = "Add line to opencode", expr = true}))
+map(
+    "n",
+    "goo",
+    function()
+        return require("opencode").operator("@this ") .. "_"
+    end,
+    vim.tbl_extend("force", defaults, {desc = "Add line to opencode", expr = true})
+)
 
-map("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end, with_desc("Scroll opencode up"))
+map(
+    "n",
+    "<S-C-u>",
+    function()
+        require("opencode").command("session.half.page.up")
+    end,
+    with_desc("Scroll opencode up")
+)
 
-map("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, with_desc("Scroll opencode down"))
+map(
+    "n",
+    "<S-C-d>",
+    function()
+        require("opencode").command("session.half.page.down")
+    end,
+    with_desc("Scroll opencode down")
+)
 
 -- Remap increment/decrement dato che <C-a> e <C-x> sono usati da opencode
 map("n", "+", "<C-a>", with_desc("Increment under cursor"))
 
 map("n", "-", "<C-x>", with_desc("Decrement under cursor"))
 
-
 -- Plugins -------------------------------------------------------------------
-local gh = function(name) return "https://github.com/" .. name end
+local gh = function(name)
+    return "https://github.com/" .. name
+end
 
 -- Tabella dei plugin
 local plugins = {
-  {
-    repo = gh("nvim-mini/mini.pairs"),
-    callback = function() require("mini.pairs").setup() end,
-  },
-  {
-    repo = gh("folke/tokyonight.nvim"),
-    callback = function() vim.cmd.colorscheme("tokyonight") end,
-  },
-  {
-    repo = gh("lukas-reineke/indent-blankline.nvim"),
-    callback = function() require('ibl').setup() end,
-  },
-  {
-    repo = gh("folke/which-key.nvim"),
-    callback = function() require("which-key").setup({}) end,
-  },
-  {
-    repo = gh("nvim-mini/mini.icons"),
-    callback = function() require('mini.icons').setup() end,
-  },
-  {
-    repo = gh("ibhagwan/fzf-lua"),
-    callback = function() require('fzf-lua').setup() end, 
-  },
-  {
-    repo = gh("nickjvandyke/opencode.nvim"),
-  },
-  {
-    repo = gh("stevearc/oil.nvim"),
-    callback = function() require("oil").setup({
-	    win_options = {
-		    signcolumn = "yes:2", 
-	    }
-    }) end,
-  },
-  {
-	  repo = gh("refractalize/oil-git-status.nvim"),
-	  callback = function() require('oil-git-status').setup() end
-  }
+    {
+        repo = gh("nvim-mini/mini.pairs"),
+        callback = function()
+            require("mini.pairs").setup()
+        end
+    },
+    {
+        repo = gh("folke/tokyonight.nvim"),
+        callback = function()
+            vim.cmd.colorscheme("tokyonight")
+        end
+    },
+    {
+        repo = gh("lukas-reineke/indent-blankline.nvim"),
+        callback = function()
+            require("ibl").setup()
+        end
+    },
+    {
+        repo = gh("folke/which-key.nvim"),
+        callback = function()
+            require("which-key").setup({})
+        end
+    },
+    {
+        repo = gh("nvim-mini/mini.icons"),
+        callback = function()
+            require("mini.icons").setup()
+        end
+    },
+    {
+        repo = gh("ibhagwan/fzf-lua"),
+        callback = function()
+            require("fzf-lua").setup()
+        end
+    },
+    {
+        repo = gh("nickjvandyke/opencode.nvim")
+    },
+    {
+        repo = gh("stevearc/oil.nvim"),
+        callback = function()
+            require("oil").setup(
+                {
+                    win_options = {
+                        signcolumn = "yes:2"
+                    }
+                }
+            )
+        end
+    },
+    {
+        repo = gh("refractalize/oil-git-status.nvim"),
+        callback = function()
+            require("oil-git-status").setup()
+        end
+    }
 }
 
 -- Ciclo su tutti i plugin
 for _, plugin in ipairs(plugins) do
-  local ok, err = pcall(vim.pack.add, { plugin.repo })
-  if not ok then
-    vim.notify("Errore caricamento " .. plugin.repo .. ": " .. err, vim.log.levels.WARN)
-  elseif plugin.callback then
-    ok, err = pcall(plugin.callback)
+    local ok, err = pcall(vim.pack.add, {plugin.repo})
     if not ok then
-      vim.notify("Errore setup " .. plugin.repo .. ": " .. err, vim.log.levels.WARN)
+        vim.notify("Errore caricamento " .. plugin.repo .. ": " .. err, vim.log.levels.WARN)
+    elseif plugin.callback then
+        ok, err = pcall(plugin.callback)
+        if not ok then
+            vim.notify("Errore setup " .. plugin.repo .. ": " .. err, vim.log.levels.WARN)
+        end
     end
-  end
 end
 
