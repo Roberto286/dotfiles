@@ -1,5 +1,19 @@
 -- Opzioni base --------------------------------------------------------------
 
+vim.cmd([[set mouse=]])
+vim.cmd([[set noswapfile]])
+vim.cmd([[hi @lsp.type.number gui=italic]])
+vim.opt.winborder = "rounded"
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.showtabline = 2
+vim.opt.signcolumn = "yes"
+vim.opt.wrap = false
+vim.opt.cursorcolumn = false
+vim.opt.ignorecase = true
+vim.opt.smartindent = true
+vim.opt.termguicolors = true
+vim.opt.undofile = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.statuscolumn = "%s %l %r "
@@ -9,15 +23,15 @@ vim.opt.showmatch = true
 -- Keymaps -------------------------------------------------------------------
 
 local map = vim.keymap.set
-local defaults = {noremap = true, silent = true}
+local defaults = { noremap = true, silent = true }
 
 -- Helper per aggiungere desc senza ripetere defaults
 local function with_desc(desc)
-    return vim.tbl_extend("force", defaults, {desc = desc})
+	return vim.tbl_extend("force", defaults, { desc = desc })
 end
 
 -- Evita che lo space faccia cose strane prima del leader
-map("n", " ", "<Nop>", {silent = true, remap = false, desc = "Leader noop"})
+map("n", " ", "<Nop>", { silent = true, remap = false, desc = "Leader noop" })
 
 -- Escape ergonomico in insert
 map("i", "jj", "<esc>l", with_desc("Escape insert mode"))
@@ -40,52 +54,57 @@ map("n", "<Leader>q", ":q<CR>", with_desc("Chiudi finestra"))
 map("n", "<Leader>e", ":Oil --float<CR>", with_desc("Apri file explorer (Oil)"))
 
 map(
-    "n",
-    "<leader>ff",
-    function()
-        require("fzf-lua").files()
-    end,
-    with_desc("Find files")
+	"n",
+	"<leader>ff",
+	function()
+		require("fzf-lua").files()
+	end,
+	with_desc("Find files")
 )
 
 map(
-    "n",
-    "<leader>fg",
-    function()
-        require("fzf-lua").live_grep()
-    end,
-    with_desc("Live grep")
+	"n",
+	"<leader>fg",
+	function()
+		require("fzf-lua").live_grep()
+	end,
+	with_desc("Live grep")
 )
 
 map(
-    "n",
-    "<leader>fb",
-    function()
-        require("fzf-lua").buffers()
-    end,
-    with_desc("Find buffers")
+	"n",
+	"<leader>fb",
+	function()
+		require("fzf-lua").buffers()
+	end,
+	with_desc("Find buffers")
 )
 
+-- Permette di aprire la mia config in modo rapido
+map({ "n", "v", "x" }, "<leader>rc", "<Cmd>edit $MYVIMRC<CR>", { desc = "Modifica: " .. vim.fn.expand("$MYVIMRC") })
+
+map({ "n", "v", "x" }, "<leader>lf", vim.lsp.buf.format, with_desc("Formatta il buffer corrente"))
+map({ "n", "v", "x" }, "gl", vim.diagnostic.open_float, with_desc("Apri la diagnostica lsp per la riga corrente"))
 -- Clipboard di sistema ------------------------------------------------------
 
-map({"n", "v"}, "<leader>y", '"+y', with_desc("Yank → clipboard sistema"))
+map({ "n", "v" }, "<leader>y", '"+y', with_desc("Yank → clipboard sistema"))
 
-map({"n", "v"}, "<leader>d", '"+d', with_desc("Delete → clipboard sistema"))
+map({ "n", "v" }, "<leader>d", '"+d', with_desc("Delete → clipboard sistema"))
 
-map({"n", "v"}, "<leader>c", '"+c', with_desc("Change → clipboard sistema"))
+map({ "n", "v" }, "<leader>c", '"+c', with_desc("Change → clipboard sistema"))
 
-map({"n", "v"}, "<leader>p", '"+p', with_desc("Paste da clipboard sistema"))
+map({ "n", "v" }, "<leader>p", '"+p', with_desc("Paste da clipboard sistema"))
 
 -- Disabilitazione frecce -----------------------------------------------------
 
 local function no_arrows_msg(direction, hint)
-    return function()
-        vim.notify(
-            "Usa le vim motions, non le frecce → prova '" .. hint .. "' per andare " .. direction,
-            vim.log.levels.INFO,
-            {title = "No arrows club"}
-        )
-    end
+	return function()
+		vim.notify(
+			"Usa le vim motions, non le frecce → prova '" .. hint .. "' per andare " .. direction,
+			vim.log.levels.INFO,
+			{ title = "No arrows club" }
+		)
+	end
 end
 
 map("n", "<Up>", no_arrows_msg("su", "k"), with_desc("Disabilita freccia ↑"))
@@ -99,66 +118,66 @@ map("n", "<Right>", no_arrows_msg("a destra", "l"), with_desc("Disabilita frecci
 -- OpenCode ------------------------------------------------------------------
 
 map(
-    {"n", "x"},
-    "<C-a>",
-    function()
-        require("opencode").ask("@this: ", {submit = true})
-    end,
-    with_desc("Ask opencode…")
+	{ "n", "x" },
+	"<C-a>",
+	function()
+		require("opencode").ask("@this: ", { submit = true })
+	end,
+	with_desc("Ask opencode…")
 )
 
 map(
-    {"n", "x"},
-    "<C-x>",
-    function()
-        require("opencode").select()
-    end,
-    with_desc("Execute opencode action…")
+	{ "n", "x" },
+	"<C-x>",
+	function()
+		require("opencode").select()
+	end,
+	with_desc("Execute opencode action…")
 )
 
 map(
-    {"n", "t"},
-    "<C-.>",
-    function()
-        require("opencode").toggle()
-    end,
-    with_desc("Toggle opencode")
+	{ "n", "t" },
+	"<C-.>",
+	function()
+		require("opencode").toggle()
+	end,
+	with_desc("Toggle opencode")
 )
 
 map(
-    {"n", "x"},
-    "go",
-    function()
-        return require("opencode").operator("@this ")
-    end,
-    vim.tbl_extend("force", defaults, {desc = "Add range to opencode", expr = true})
+	{ "n", "x" },
+	"go",
+	function()
+		return require("opencode").operator("@this ")
+	end,
+	vim.tbl_extend("force", defaults, { desc = "Add range to opencode", expr = true })
 )
 
 map(
-    "n",
-    "goo",
-    function()
-        return require("opencode").operator("@this ") .. "_"
-    end,
-    vim.tbl_extend("force", defaults, {desc = "Add line to opencode", expr = true})
+	"n",
+	"goo",
+	function()
+		return require("opencode").operator("@this ") .. "_"
+	end,
+	vim.tbl_extend("force", defaults, { desc = "Add line to opencode", expr = true })
 )
 
 map(
-    "n",
-    "<S-C-u>",
-    function()
-        require("opencode").command("session.half.page.up")
-    end,
-    with_desc("Scroll opencode up")
+	"n",
+	"<S-C-u>",
+	function()
+		require("opencode").command("session.half.page.up")
+	end,
+	with_desc("Scroll opencode up")
 )
 
 map(
-    "n",
-    "<S-C-d>",
-    function()
-        require("opencode").command("session.half.page.down")
-    end,
-    with_desc("Scroll opencode down")
+	"n",
+	"<S-C-d>",
+	function()
+		require("opencode").command("session.half.page.down")
+	end,
+	with_desc("Scroll opencode down")
 )
 
 -- Remap increment/decrement dato che <C-a> e <C-x> sono usati da opencode
@@ -168,80 +187,96 @@ map("n", "-", "<C-x>", with_desc("Decrement under cursor"))
 
 -- Plugins -------------------------------------------------------------------
 local gh = function(name)
-    return "https://github.com/" .. name
+	return "https://github.com/" .. name
 end
 
 -- Tabella dei plugin
 local plugins = {
-    {
-        repo = gh("nvim-mini/mini.pairs"),
-        callback = function()
-            require("mini.pairs").setup()
-        end
-    },
-    {
-        repo = gh("folke/tokyonight.nvim"),
-        callback = function()
-            vim.cmd.colorscheme("tokyonight")
-        end
-    },
-    {
-        repo = gh("lukas-reineke/indent-blankline.nvim"),
-        callback = function()
-            require("ibl").setup()
-        end
-    },
-    {
-        repo = gh("folke/which-key.nvim"),
-        callback = function()
-            require("which-key").setup({})
-        end
-    },
-    {
-        repo = gh("nvim-mini/mini.icons"),
-        callback = function()
-            require("mini.icons").setup()
-        end
-    },
-    {
-        repo = gh("ibhagwan/fzf-lua"),
-        callback = function()
-            require("fzf-lua").setup()
-        end
-    },
-    {
-        repo = gh("nickjvandyke/opencode.nvim")
-    },
-    {
-        repo = gh("stevearc/oil.nvim"),
-        callback = function()
-            require("oil").setup(
-                {
-                    win_options = {
-                        signcolumn = "yes:2"
-                    }
-                }
-            )
-        end
-    },
-    {
-        repo = gh("refractalize/oil-git-status.nvim"),
-        callback = function()
-            require("oil-git-status").setup()
-        end
-    }
+	{
+		repo = gh("nvim-mini/mini.pairs"),
+		callback = function()
+			require("mini.pairs").setup()
+		end
+	},
+	{
+		repo = gh("folke/tokyonight.nvim"),
+		callback = function()
+			vim.cmd.colorscheme("tokyonight")
+		end
+	},
+	{
+		repo = gh("lukas-reineke/indent-blankline.nvim"),
+		callback = function()
+			require("ibl").setup()
+		end
+	},
+	{
+		repo = gh("folke/which-key.nvim"),
+		callback = function()
+			require("which-key").setup({})
+		end
+	},
+	{
+		repo = gh("nvim-mini/mini.icons"),
+		callback = function()
+			require("mini.icons").setup()
+		end
+	},
+	{
+		repo = gh("ibhagwan/fzf-lua"),
+		callback = function()
+			require("fzf-lua").setup()
+		end
+	},
+	{
+		repo = gh("nickjvandyke/opencode.nvim")
+	},
+	{
+		repo = gh("stevearc/oil.nvim"),
+		callback = function()
+			require("oil").setup({
+				lsp_file_methods = {
+					enabled = true,
+					timeout_ms = 1000,
+					autosave_changes = true,
+				},
+				columns = {
+					"icon",
+				},
+				float = {
+					max_width = 0.3,
+					max_height = 0.6,
+					border = "rounded",
+				},
+			})
+		end
+	},
+	{
+		repo = gh("refractalize/oil-git-status.nvim"),
+		callback = function()
+			require("oil-git-status").setup()
+		end
+	},
+	{
+		repo = gh("neovim/nvim-lspconfig"),
+		callback = function()
+			vim.lsp.config("lua_ls", {})
+			vim.lsp.enable("lua_ls")
+			vim.lsp.config('ruff', {})
+			vim.lsp.enable('ruff')
+		end
+	}
 }
 
 -- Ciclo su tutti i plugin
 for _, plugin in ipairs(plugins) do
-    local ok, err = pcall(vim.pack.add, {plugin.repo})
-    if not ok then
-        vim.notify("Errore caricamento " .. plugin.repo .. ": " .. err, vim.log.levels.WARN)
-    elseif plugin.callback then
-        ok, err = pcall(plugin.callback)
-        if not ok then
-            vim.notify("Errore setup " .. plugin.repo .. ": " .. err, vim.log.levels.WARN)
-        end
-    end
+	local ok, err = pcall(vim.pack.add, { plugin.repo })
+	if not ok then
+		vim.notify("Errore caricamento " .. plugin.repo .. ": " .. err, vim.log.levels.WARN)
+	elseif plugin.callback then
+		ok, err = pcall(plugin.callback)
+		if not ok then
+			vim.notify("Errore setup " .. plugin.repo .. ": " .. err, vim.log.levels.WARN)
+		end
+	end
 end
-
