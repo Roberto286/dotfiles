@@ -41,4 +41,4 @@ if test -d "$HOME/.local/bin"
 end
 
 # opencode
-fish_add_path /Users/roberto.saliola/.opencode/bin
+fish_add_path /home/roberto/.opencode/bin
