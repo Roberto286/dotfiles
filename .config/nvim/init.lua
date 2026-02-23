@@ -260,10 +260,44 @@ local plugins = {
 	{
 		repo = gh("neovim/nvim-lspconfig"),
 		callback = function()
+			-- LSP Lua
 			vim.lsp.config("lua_ls", {})
 			vim.lsp.enable("lua_ls")
-			vim.lsp.config('ruff', {})
-			vim.lsp.enable('ruff')
+
+			--LSP Python
+			vim.lsp.config("pyright", {})
+			vim.lsp.enable("pyright")
+
+		end
+	},
+	{
+		repo = gh("rafamadriz/friendly-snippets")
+	},
+	{
+		repo = gh("saghen/blink.cmp"),
+		callback = function()
+			require("blink.cmp").setup({
+				keymap = {
+					preset = "default",
+				},
+
+				completion = {
+					menu = {
+						border = "rounded",
+					},
+					documentation = {
+						auto_show = true,
+					},
+				},
+
+				sources = {
+					default = { 'lsp', 'path', 'snippets', 'buffer' },
+				},
+
+				fuzzy = {
+					implementation = "prefer_rust_with_warning",
+				}
+			})
 		end
 	}
 }
