@@ -267,7 +267,6 @@ local plugins = {
 			--LSP Python
 			vim.lsp.config("pyright", {})
 			vim.lsp.enable("pyright")
-
 		end
 	},
 	{
@@ -279,6 +278,15 @@ local plugins = {
 			require("blink.cmp").setup({
 				keymap = {
 					preset = "default",
+
+					-- Tab fa *select_and_accept* (prende voce selezionata)
+					["<Tab>"] = { "select_and_accept", "fallback" },
+
+					-- Shift+Tab torna indietro nelle snippet
+					["<S-Tab>"] = { "snippet_backward", "fallback" },
+
+					-- Enter (CR) conferma come in VSCode
+					["<CR>"] = { "accept", "fallback" },
 				},
 
 				completion = {
