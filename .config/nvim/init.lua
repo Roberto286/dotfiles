@@ -7,7 +7,7 @@ vim.opt.winborder = "rounded"
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.showtabline = 2
-vim.opt.signcolumn = "yes"
+vim.opt.signcolumn = "yes:2"
 vim.opt.wrap = false
 vim.opt.cursorcolumn = false
 vim.opt.ignorecase = true
@@ -258,15 +258,29 @@ local plugins = {
 		end
 	},
 	{
+		repo = gh("b0o/schemastore.nvim"),
+	},
+	{
 		repo = gh("neovim/nvim-lspconfig"),
 		callback = function()
 			-- LSP Lua
 			vim.lsp.config("lua_ls", {})
 			vim.lsp.enable("lua_ls")
 
-			--LSP Python
+			-- LSP Python
 			vim.lsp.config("pyright", {})
 			vim.lsp.enable("pyright")
+
+			-- LSP json
+			vim.lsp.config("jsonls", {
+				settings = {
+					json = {
+						validate = { enable = true },
+						schemas = require('schemastore').json.schemas(),
+					},
+				},
+			})
+			vim.lsp.enable("jsonls")
 		end
 	},
 	{
