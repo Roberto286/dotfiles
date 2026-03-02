@@ -7,6 +7,9 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "sticky_scroll": {
+    "enabled": true
+  },
   "preview_tabs": {
     "enable_preview_from_file_finder": false
   },
