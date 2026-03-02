@@ -25,7 +25,7 @@
       "src": "https://github.com/nvim-mini/mini.pairs"
     },
     "nvim-lspconfig": {
-      "rev": "44acfe887d4056f704ccc4f17513ed41c9e2b2e6",
+      "rev": "5a855bcfec7973767a1a472335684bbd71d2fa2b",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "oil-git-status.nvim": {
@@ -39,6 +39,10 @@
     "opencode.nvim": {
       "rev": "e876696dc93c1962eaeff8ca5114c23c20485d09",
       "src": "https://github.com/nickjvandyke/opencode.nvim"
+    },
+    "schemastore.nvim": {
+      "rev": "2c2f2d3fb568bbff1a5e1344e87a979b7edf50a8",
+      "src": "https://github.com/b0o/schemastore.nvim"
     },
     "tokyonight.nvim": {
       "rev": "5da1b76e64daf4c5d410f06bcb6b9cb640da7dfd",
