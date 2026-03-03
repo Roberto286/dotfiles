@@ -20,6 +20,13 @@ vim.opt.statuscolumn = "%s %l %r "
 vim.g.mapleader = " "
 vim.opt.showmatch = true
 
+-- Questo permette a nvim di leggere le modifiche fatte da OpenCode o altri agenti in "real-time"
+vim.o.autoread = true
+
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
+	pattern = "*",
+	command = "checktime",
+})
 -- Keymaps -------------------------------------------------------------------
 
 local map = vim.keymap.set
@@ -94,6 +101,11 @@ map({ "n", "v" }, "<leader>d", '"+d', with_desc("Delete → clipboard sistema"))
 map({ "n", "v" }, "<leader>c", '"+c', with_desc("Change → clipboard sistema"))
 
 map({ "n", "v" }, "<leader>p", '"+p', with_desc("Paste da clipboard sistema"))
+
+-- gitsigns
+map({ "n" }, "<leader>tb", function()
+	require('gitsigns').toggle_current_line_blame()
+end, with_desc("Toggle line blame"))
 
 -- Disabilitazione frecce -----------------------------------------------------
 
@@ -320,6 +332,18 @@ local plugins = {
 					implementation = "prefer_rust_with_warning",
 				}
 			})
+		end
+	},
+	{
+		repo = gh("lewis6991/gitsigns.nvim"),
+		callback = function()
+			require('gitsigns').setup({})
+		end
+	},
+	{
+		repo = gh("nvim-mini/mini.surround"),
+		callback = function()
+			require('mini.surround').setup()
 		end
 	}
 }
