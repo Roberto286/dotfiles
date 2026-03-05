@@ -20,6 +20,12 @@ vim.opt.statuscolumn = "%s %l %r "
 vim.g.mapleader = " "
 vim.opt.showmatch = true
 
+-- Folding
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldlevel = 99
+vim.opt.foldcolumn = "1"
+
 -- Questo permette a nvim di leggere le modifiche fatte da OpenCode o altri agenti in "real-time"
 vim.o.autoread = true
 
@@ -44,9 +50,12 @@ map("n", " ", "<Nop>", { silent = true, remap = false, desc = "Leader noop" })
 map("i", "jj", "<esc>l", with_desc("Escape insert mode"))
 
 -- Terminale
-map("n", "<Leader>t", ":belowright split | terminal<CR>i", with_desc("Apri terminale (split orizzontale)"))
+map("n", "<Leader>tt", ":belowright split | terminal<CR>i", with_desc("Apri terminale (split orizzontale)"))
 
 map("t", "<Esc>", [[<C-\><C-n>]], with_desc("Terminal → Normal mode"))
+
+-- Apri le code actions in modalità normale o visual
+vim.keymap.set({'n','v'}, '<leader>ca', vim.lsp.buf.code_action, with_desc("Code Action"))
 
 -- Comandi rapidi file -------------------------------------------------------
 
@@ -64,7 +73,7 @@ map(
 	"n",
 	"<leader>ff",
 	function()
-		require("fzf-lua").files()
+		require("mini.pick").builtin.files()
 	end,
 	with_desc("Find files")
 )
@@ -73,7 +82,7 @@ map(
 	"n",
 	"<leader>fg",
 	function()
-		require("fzf-lua").live_grep()
+		require("mini.pick").builtin.grep_live()
 	end,
 	with_desc("Live grep")
 )
@@ -82,7 +91,7 @@ map(
 	"n",
 	"<leader>fb",
 	function()
-		require("fzf-lua").buffers()
+		require("mini.pick").builtin.buffers()
 	end,
 	with_desc("Find buffers")
 )
@@ -217,15 +226,36 @@ local plugins = {
 		end
 	},
 	{
-		repo = gh("lukas-reineke/indent-blankline.nvim"),
+		repo = gh("nvim-mini/mini.indentscope"),
 		callback = function()
-			require("ibl").setup()
+			require("mini.indentscope").setup({
+				symbol = "│",
+				options = { try_as_border = true },
+			})
 		end
 	},
 	{
-		repo = gh("folke/which-key.nvim"),
+		repo = gh("nvim-mini/mini.clue"),
 		callback = function()
-			require("which-key").setup({})
+			local miniclue = require('mini.clue')
+			miniclue.setup({
+				window = {
+					delay = 200,
+					config = { border = "rounded" },
+				},
+				triggers = {
+					{ mode = 'n', keys = '<Leader>' },
+					{ mode = 'x', keys = '<Leader>' },
+				},
+				clues = {
+					miniclue.gen_clues.builtin_completion(),
+					miniclue.gen_clues.g(),
+					miniclue.gen_clues.marks(),
+					miniclue.gen_clues.registers(),
+					miniclue.gen_clues.windows(),
+					miniclue.gen_clues.z(),
+				},
+			})
 		end
 	},
 	{
@@ -235,9 +265,15 @@ local plugins = {
 		end
 	},
 	{
-		repo = gh("ibhagwan/fzf-lua"),
+		repo = gh("nvim-mini/mini.pick"),
 		callback = function()
-			require("fzf-lua").setup()
+			require("mini.pick").setup({
+				window = {
+					config = {
+						border = "rounded",
+					},
+				},
+			})
 		end
 	},
 	{
@@ -259,6 +295,9 @@ local plugins = {
 					max_width = 0.3,
 					max_height = 0.6,
 					border = "rounded",
+				},
+				win_options = {
+					signcolumn = "yes:2",
 				},
 			})
 		end
@@ -337,13 +376,41 @@ local plugins = {
 	{
 		repo = gh("lewis6991/gitsigns.nvim"),
 		callback = function()
-			require('gitsigns').setup({})
+			require('gitsigns').setup({
+				current_line_blame = true,
+				current_line_blame_opts = {
+					delay = 300,
+				},
+			})
 		end
 	},
 	{
 		repo = gh("nvim-mini/mini.surround"),
 		callback = function()
 			require('mini.surround').setup()
+		end
+	},
+	{
+		repo = gh("nvim-mini/mini.notify"),
+		callback = function()
+			local notify = require("mini.notify")
+			notify.setup()
+			vim.notify = notify.make_notify()
+		end
+	},
+	{
+		repo = gh("nvim-treesitter/nvim-treesitter"),
+		callback = function()
+			require('nvim-treesitter').setup({
+				ensure_installed = { "lua", "python", "json", "markdown", "vim", "vimdoc" },
+				auto_install = true,
+				highlight = {
+					enable = true,
+				},
+				indent = {
+					enable = true,
+				},
+			})
 		end
 	}
 }
