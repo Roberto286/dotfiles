@@ -55,7 +55,7 @@ map("n", "<Leader>tt", ":belowright split | terminal<CR>i", with_desc("Apri term
 map("t", "<Esc>", [[<C-\><C-n>]], with_desc("Terminal → Normal mode"))
 
 -- Apri le code actions in modalità normale o visual
-vim.keymap.set({'n','v'}, '<leader>ca', vim.lsp.buf.code_action, with_desc("Code Action"))
+vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, with_desc("Code Action"))
 
 -- Comandi rapidi file -------------------------------------------------------
 
@@ -319,8 +319,16 @@ local plugins = {
 			vim.lsp.enable("lua_ls")
 
 			-- LSP Python
-			vim.lsp.config("pyright", {})
-			vim.lsp.enable("pyright")
+			vim.lsp.config("basedpyright", { {
+				settings = {
+					python = {
+						analysis = {
+							diagnosticMode = "openFilesOnly",
+						}
+					}
+				}
+			} })
+			vim.lsp.enable("basedpyright")
 
 			-- LSP json
 			vim.lsp.config("jsonls", {
@@ -388,14 +396,6 @@ local plugins = {
 		repo = gh("nvim-mini/mini.surround"),
 		callback = function()
 			require('mini.surround').setup()
-		end
-	},
-	{
-		repo = gh("nvim-mini/mini.notify"),
-		callback = function()
-			local notify = require("mini.notify")
-			notify.setup()
-			vim.notify = notify.make_notify()
 		end
 	},
 	{
