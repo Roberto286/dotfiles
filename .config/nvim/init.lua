@@ -19,6 +19,10 @@ vim.opt.relativenumber = true
 vim.opt.statuscolumn = "%s %l %r "
 vim.g.mapleader = " "
 vim.opt.showmatch = true
+vim.opt.guicursor:append("c:ver25")
+vim.g.format_on_save = true
+vim.opt.wrap = true
+vim.opt.exrc = true
 
 -- Folding
 vim.opt.foldmethod = "expr"
@@ -55,7 +59,10 @@ map("n", "<Leader>tt", ":belowright split | terminal<CR>i", with_desc("Apri term
 map("t", "<Esc>", [[<C-\><C-n>]], with_desc("Terminal → Normal mode"))
 
 -- Apri le code actions in modalità normale o visual
-vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, with_desc("Code Action"))
+map({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, with_desc("Code Action"))
+
+-- Rename con LSP
+map({ "n", "v" }, "<leader>rn", vim.lsp.buf.rename, with_desc("Rename"))
 
 -- Comandi rapidi file -------------------------------------------------------
 
