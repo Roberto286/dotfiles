@@ -347,6 +347,14 @@ local plugins = {
 				},
 			})
 			vim.lsp.enable("jsonls")
+
+			vim.lsp.enable('wc_language_server')
+
+			vim.lsp.enable("biome")
+
+			vim.lsp.enable("emmet_language_server")
+
+			vim.lsp.enable("rumdl")
 		end
 	},
 	{
@@ -434,3 +442,22 @@ for _, plugin in ipairs(plugins) do
 		end
 	end
 end
+
+-- Format on save
+
+vim.api.nvim_create_autocmd("LspAttach", {
+	group = vim.api.nvim_create_augroup("lsp", { clear = true }),
+	callback = function(args)
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			buffer = args.buf,
+			callback = function()
+				vim.lsp.buf.format { async = false, id = args.data.client_id }
+			end,
+		})
+	end
+})
+
+-- Auto save
+vim.api.nvim_create_autocmd({ "FocusLost", "InsertLeave", "TextChanged" }, {
+	command = "silent! update",
+})
