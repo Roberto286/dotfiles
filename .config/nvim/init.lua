@@ -1,14 +1,34 @@
--- Opzioni base --------------------------------------------------------------
+-- init.lua -------------------------------------------------------------
 
-vim.cmd([[set mouse=]])
-vim.cmd([[set noswapfile]])
-vim.cmd([[hi @lsp.type.number gui=italic]])
+-- ================================
+-- 1️⃣ Bootstrap lazy.nvim
+-- ================================
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system(
+        {
+            "git",
+            "clone",
+            "--filter=blob:none",
+            "https://github.com/folke/lazy.nvim.git",
+            "--branch=stable",
+            lazypath
+        }
+    )
+end
+vim.opt.rtp:prepend(lazypath)
+
+-- ================================
+-- 2️⃣ Vim options
+-- ================================
+vim.opt.mouse = ""
+vim.opt.swapfile = false
 vim.opt.winborder = "rounded"
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.showtabline = 2
 vim.opt.signcolumn = "yes:2"
-vim.opt.wrap = false
+vim.opt.wrap = true
 vim.opt.cursorcolumn = false
 vim.opt.ignorecase = true
 vim.opt.smartindent = true
@@ -21,7 +41,6 @@ vim.g.mapleader = " "
 vim.opt.showmatch = true
 vim.opt.guicursor:append("c:ver25")
 vim.g.format_on_save = true
-vim.opt.wrap = true
 vim.opt.exrc = true
 
 -- Folding
@@ -30,434 +49,322 @@ vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldlevel = 99
 vim.opt.foldcolumn = "1"
 
--- Questo permette a nvim di leggere le modifiche fatte da OpenCode o altri agenti in "real-time"
+-- Auto-read changes from external tools
 vim.o.autoread = true
+vim.api.nvim_create_autocmd(
+    {"FocusGained", "BufEnter", "CursorHold"},
+    {
+        pattern = "*",
+        command = "checktime"
+    }
+)
 
-vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
-	pattern = "*",
-	command = "checktime",
-})
--- Keymaps -------------------------------------------------------------------
+-- Auto-save
+vim.api.nvim_create_autocmd(
+    {"FocusLost", "InsertLeave", "TextChanged"},
+    {
+        command = "silent! update"
+    }
+)
 
+-- ================================
+-- 3️⃣ Keymaps
+-- ================================
 local map = vim.keymap.set
-local defaults = { noremap = true, silent = true }
-
--- Helper per aggiungere desc senza ripetere defaults
+local defaults = {noremap = true, silent = true}
 local function with_desc(desc)
-	return vim.tbl_extend("force", defaults, { desc = desc })
+    return vim.tbl_extend("force", defaults, {desc = desc})
 end
 
--- Evita che lo space faccia cose strane prima del leader
-map("n", " ", "<Nop>", { silent = true, remap = false, desc = "Leader noop" })
-
--- Escape ergonomico in insert
+-- Leader
+map("n", " ", "<Nop>", with_desc("Leader noop"))
 map("i", "jj", "<esc>l", with_desc("Escape insert mode"))
 
--- Terminale
-map("n", "<Leader>tt", ":belowright split | terminal<CR>i", with_desc("Apri terminale (split orizzontale)"))
-
+-- Terminal
+map("n", "<Leader>tt", ":belowright split | terminal<CR>i", with_desc("Apri terminale (split)"))
 map("t", "<Esc>", [[<C-\><C-n>]], with_desc("Terminal → Normal mode"))
 
--- Apri le code actions in modalità normale o visual
-map({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, with_desc("Code Action"))
+-- LSP
+map({"n", "v"}, "<leader>ca", vim.lsp.buf.code_action, with_desc("Code Action"))
+map({"n", "v"}, "<leader>rn", vim.lsp.buf.rename, with_desc("Rename"))
 
--- Rename con LSP
-map({ "n", "v" }, "<leader>rn", vim.lsp.buf.rename, with_desc("Rename"))
-
--- Comandi rapidi file -------------------------------------------------------
-
+-- File commands
 map("n", "<Leader>w", ":write<CR>", with_desc("Salva file"))
-
 map("n", "<Leader>a", ":wqa<CR>", with_desc("Salva tutto e chiudi"))
-
 map("n", "<Leader>x", ":wq<CR>", with_desc("Salva e chiudi"))
-
 map("n", "<Leader>q", ":q<CR>", with_desc("Chiudi finestra"))
-
 map("n", "<Leader>e", ":Oil --float<CR>", with_desc("Apri file explorer (Oil)"))
 
 map(
-	"n",
-	"<leader>ff",
-	function()
-		require("mini.pick").builtin.files()
-	end,
-	with_desc("Find files")
+    "n",
+    "<leader>ff",
+    function()
+        require("mini.pick").builtin.files()
+    end,
+    with_desc("Find files")
 )
-
 map(
-	"n",
-	"<leader>fg",
-	function()
-		require("mini.pick").builtin.grep_live()
-	end,
-	with_desc("Live grep")
+    "n",
+    "<leader>fg",
+    function()
+        require("mini.pick").builtin.grep_live()
+    end,
+    with_desc("Live grep")
 )
-
 map(
-	"n",
-	"<leader>fb",
-	function()
-		require("mini.pick").builtin.buffers()
-	end,
-	with_desc("Find buffers")
+    "n",
+    "<leader>fb",
+    function()
+        require("mini.pick").builtin.buffers()
+    end,
+    with_desc("Find buffers")
 )
 
--- Permette di aprire la mia config in modo rapido
-map({ "n", "v", "x" }, "<leader>rc", "<Cmd>edit $MYVIMRC<CR>", { desc = "Modifica: " .. vim.fn.expand("$MYVIMRC") })
+-- Edit config
+map({"n", "v", "x"}, "<leader>rc", "<Cmd>edit $MYVIMRC<CR>", {desc = "Modifica: " .. vim.fn.expand("$MYVIMRC")})
+map({"n", "v", "x"}, "<leader>lf", vim.lsp.buf.format, with_desc("Formatta il buffer corrente"))
+map({"n", "v", "x"}, "gl", vim.diagnostic.open_float, with_desc("Apri diagnostica LSP per la riga corrente"))
 
-map({ "n", "v", "x" }, "<leader>lf", vim.lsp.buf.format, with_desc("Formatta il buffer corrente"))
-map({ "n", "v", "x" }, "gl", vim.diagnostic.open_float, with_desc("Apri la diagnostica lsp per la riga corrente"))
--- Clipboard di sistema ------------------------------------------------------
+-- System clipboard
+map({"n", "v"}, "<leader>y", '"+y', with_desc("Yank → clipboard sistema"))
+map({"n", "v"}, "<leader>d", '"+d', with_desc("Delete → clipboard sistema"))
+map({"n", "v"}, "<leader>c", '"+c', with_desc("Change → clipboard sistema"))
+map({"n", "v"}, "<leader>p", '"+p', with_desc("Paste da clipboard sistema"))
 
-map({ "n", "v" }, "<leader>y", '"+y', with_desc("Yank → clipboard sistema"))
+-- Gitsigns
+map(
+    "n",
+    "<leader>tb",
+    function()
+        require("gitsigns").toggle_current_line_blame()
+    end,
+    with_desc("Toggle line blame")
+)
 
-map({ "n", "v" }, "<leader>d", '"+d', with_desc("Delete → clipboard sistema"))
-
-map({ "n", "v" }, "<leader>c", '"+c', with_desc("Change → clipboard sistema"))
-
-map({ "n", "v" }, "<leader>p", '"+p', with_desc("Paste da clipboard sistema"))
-
--- gitsigns
-map({ "n" }, "<leader>tb", function()
-	require('gitsigns').toggle_current_line_blame()
-end, with_desc("Toggle line blame"))
-
--- Disabilitazione frecce -----------------------------------------------------
-
+-- Disable arrow keys
 local function no_arrows_msg(direction, hint)
-	return function()
-		vim.notify(
-			"Usa le vim motions, non le frecce → prova '" .. hint .. "' per andare " .. direction,
-			vim.log.levels.INFO,
-			{ title = "No arrows club" }
-		)
-	end
+    return function()
+        vim.notify(
+            "Usa le vim motions, non le frecce → prova '" .. hint .. "' per andare " .. direction,
+            vim.log.levels.INFO,
+            {title = "No arrows club"}
+        )
+    end
 end
-
 map("n", "<Up>", no_arrows_msg("su", "k"), with_desc("Disabilita freccia ↑"))
-
 map("n", "<Down>", no_arrows_msg("giù", "j"), with_desc("Disabilita freccia ↓"))
-
 map("n", "<Left>", no_arrows_msg("a sinistra", "h"), with_desc("Disabilita freccia ←"))
-
 map("n", "<Right>", no_arrows_msg("a destra", "l"), with_desc("Disabilita freccia →"))
 
--- OpenCode ------------------------------------------------------------------
-
+-- OpenCode
 map(
-	{ "n", "x" },
-	"<C-a>",
-	function()
-		require("opencode").ask("@this: ", { submit = true })
-	end,
-	with_desc("Ask opencode…")
+    {"n", "x"},
+    "<C-a>",
+    function()
+        require("opencode").ask("@this: ", {submit = true})
+    end,
+    with_desc("Ask opencode…")
+)
+map(
+    {"n", "x"},
+    "<C-x>",
+    function()
+        require("opencode").select()
+    end,
+    with_desc("Execute opencode action…")
+)
+map(
+    {"n", "t"},
+    "<C-.>",
+    function()
+        require("opencode").toggle()
+    end,
+    with_desc("Toggle opencode")
+)
+map(
+    {"n", "x"},
+    "go",
+    function()
+        return require("opencode").operator("@this ")
+    end,
+    vim.tbl_extend("force", defaults, {desc = "Add range to opencode", expr = true})
+)
+map(
+    "n",
+    "goo",
+    function()
+        return require("opencode").operator("@this ") .. "_"
+    end,
+    vim.tbl_extend("force", defaults, {desc = "Add line to opencode", expr = true})
+)
+map(
+    "n",
+    "<S-C-u>",
+    function()
+        require("opencode").command("session.half.page.up")
+    end,
+    with_desc("Scroll opencode up")
+)
+map(
+    "n",
+    "<S-C-d>",
+    function()
+        require("opencode").command("session.half.page.down")
+    end,
+    with_desc("Scroll opencode down")
 )
 
-map(
-	{ "n", "x" },
-	"<C-x>",
-	function()
-		require("opencode").select()
-	end,
-	with_desc("Execute opencode action…")
-)
-
-map(
-	{ "n", "t" },
-	"<C-.>",
-	function()
-		require("opencode").toggle()
-	end,
-	with_desc("Toggle opencode")
-)
-
-map(
-	{ "n", "x" },
-	"go",
-	function()
-		return require("opencode").operator("@this ")
-	end,
-	vim.tbl_extend("force", defaults, { desc = "Add range to opencode", expr = true })
-)
-
-map(
-	"n",
-	"goo",
-	function()
-		return require("opencode").operator("@this ") .. "_"
-	end,
-	vim.tbl_extend("force", defaults, { desc = "Add line to opencode", expr = true })
-)
-
-map(
-	"n",
-	"<S-C-u>",
-	function()
-		require("opencode").command("session.half.page.up")
-	end,
-	with_desc("Scroll opencode up")
-)
-
-map(
-	"n",
-	"<S-C-d>",
-	function()
-		require("opencode").command("session.half.page.down")
-	end,
-	with_desc("Scroll opencode down")
-)
-
--- Remap increment/decrement dato che <C-a> e <C-x> sono usati da opencode
+-- Increment/decrement (remap because C-a/C-x used by OpenCode)
 map("n", "+", "<C-a>", with_desc("Increment under cursor"))
-
 map("n", "-", "<C-x>", with_desc("Decrement under cursor"))
 
--- Plugins -------------------------------------------------------------------
+-- ================================
+-- 4️⃣ Plugin setup (lazy.nvim)
+-- ================================
 local gh = function(name)
-	return "https://github.com/" .. name
+    return "https://github.com/" .. name
 end
-
--- Tabella dei plugin
 local plugins = {
-	{
-		repo = gh("nvim-mini/mini.pairs"),
-		callback = function()
-			require("mini.pairs").setup()
-		end
-	},
-	{
-		repo = gh("folke/tokyonight.nvim"),
-		callback = function()
-			vim.cmd.colorscheme("tokyonight")
-		end
-	},
-	{
-		repo = gh("nvim-mini/mini.indentscope"),
-		callback = function()
-			require("mini.indentscope").setup({
-				symbol = "│",
-				options = { try_as_border = true },
-			})
-		end
-	},
-	{
-		repo = gh("nvim-mini/mini.clue"),
-		callback = function()
-			local miniclue = require('mini.clue')
-			miniclue.setup({
-				window = {
-					delay = 200,
-					config = { border = "rounded" },
-				},
-				triggers = {
-					{ mode = 'n', keys = '<Leader>' },
-					{ mode = 'x', keys = '<Leader>' },
-				},
-				clues = {
-					miniclue.gen_clues.builtin_completion(),
-					miniclue.gen_clues.g(),
-					miniclue.gen_clues.marks(),
-					miniclue.gen_clues.registers(),
-					miniclue.gen_clues.windows(),
-					miniclue.gen_clues.z(),
-				},
-			})
-		end
-	},
-	{
-		repo = gh("nvim-mini/mini.icons"),
-		callback = function()
-			require("mini.icons").setup()
-		end
-	},
-	{
-		repo = gh("nvim-mini/mini.pick"),
-		callback = function()
-			require("mini.pick").setup({
-				window = {
-					config = {
-						border = "rounded",
-					},
-				},
-			})
-		end
-	},
-	{
-		repo = gh("nickjvandyke/opencode.nvim")
-	},
-	{
-		repo = gh("stevearc/oil.nvim"),
-		callback = function()
-			require("oil").setup({
-				lsp_file_methods = {
-					enabled = true,
-					timeout_ms = 1000,
-					autosave_changes = true,
-				},
-				columns = {
-					"icon",
-				},
-				float = {
-					max_width = 0.3,
-					max_height = 0.6,
-					border = "rounded",
-				},
-				win_options = {
-					signcolumn = "yes:2",
-				},
-			})
-		end
-	},
-	{
-		repo = gh("refractalize/oil-git-status.nvim"),
-		callback = function()
-			require("oil-git-status").setup()
-		end
-	},
-	{
-		repo = gh("b0o/schemastore.nvim"),
-	},
-	{
-		repo = gh("neovim/nvim-lspconfig"),
-		callback = function()
-			-- LSP Lua
-			vim.lsp.config("lua_ls", {})
-			vim.lsp.enable("lua_ls")
-
-			-- LSP Python
-			vim.lsp.config("basedpyright", { {
-				settings = {
-					python = {
-						analysis = {
-							diagnosticMode = "openFilesOnly",
-						}
-					}
-				}
-			} })
-			vim.lsp.enable("basedpyright")
-
-			-- LSP json
-			vim.lsp.config("jsonls", {
-				settings = {
-					json = {
-						validate = { enable = true },
-						schemas = require('schemastore').json.schemas(),
-					},
-				},
-			})
-			vim.lsp.enable("jsonls")
-
-			vim.lsp.enable('wc_language_server')
-
-			vim.lsp.enable("biome")
-
-			vim.lsp.enable("emmet_language_server")
-
-			vim.lsp.enable("rumdl")
-		end
-	},
-	{
-		repo = gh("rafamadriz/friendly-snippets")
-	},
-	{
-		repo = gh("saghen/blink.cmp"),
-		callback = function()
-			require("blink.cmp").setup({
-				keymap = {
-					preset = "default",
-
-					-- Tab fa *select_and_accept* (prende voce selezionata)
-					["<Tab>"] = { "select_and_accept", "fallback" },
-
-					-- Shift+Tab torna indietro nelle snippet
-					["<S-Tab>"] = { "snippet_backward", "fallback" },
-
-					-- Enter (CR) conferma come in VSCode
-					["<CR>"] = { "accept", "fallback" },
-				},
-
-				completion = {
-					menu = {
-						border = "rounded",
-					},
-					documentation = {
-						auto_show = true,
-					},
-				},
-
-				sources = {
-					default = { 'lsp', 'path', 'snippets', 'buffer' },
-				},
-
-				fuzzy = {
-					implementation = "prefer_rust_with_warning",
-				}
-			})
-		end
-	},
-	{
-		repo = gh("lewis6991/gitsigns.nvim"),
-		callback = function()
-			require('gitsigns').setup({
-				current_line_blame = true,
-				current_line_blame_opts = {
-					delay = 300,
-				},
-			})
-		end
-	},
-	{
-		repo = gh("nvim-mini/mini.surround"),
-		callback = function()
-			require('mini.surround').setup()
-		end
-	},
-	{
-		repo = gh("nvim-treesitter/nvim-treesitter"),
-		callback = function()
-			require('nvim-treesitter').setup({
-				ensure_installed = { "lua", "python", "json", "markdown", "vim", "vimdoc" },
-				auto_install = true,
-				highlight = {
-					enable = true,
-				},
-				indent = {
-					enable = true,
-				},
-			})
-		end
-	}
+    {gh("nvim-mini/mini.pairs"), config = function()
+            require("mini.pairs").setup()
+        end},
+    {gh("folke/tokyonight.nvim"), config = function()
+            vim.cmd.colorscheme("tokyonight")
+        end},
+    {gh("nvim-mini/mini.indentscope"), config = function()
+            require("mini.indentscope").setup({symbol = "│", options = {try_as_border = true}})
+        end},
+    {
+        gh("nvim-mini/mini.clue"),
+        config = function()
+            require("mini.clue").setup(
+                {
+                    window = {delay = 200, config = {border = "rounded"}},
+                    triggers = {{mode = "n", keys = "<Leader>"}, {mode = "x", keys = "<Leader>"}},
+                    clues = {
+                        require("mini.clue").gen_clues.builtin_completion(),
+                        require("mini.clue").gen_clues.g(),
+                        require("mini.clue").gen_clues.marks(),
+                        require("mini.clue").gen_clues.registers(),
+                        require("mini.clue").gen_clues.windows(),
+                        require("mini.clue").gen_clues.z()
+                    }
+                }
+            )
+        end
+    },
+    {gh("nvim-mini/mini.icons"), config = function()
+            require("mini.icons").setup()
+        end},
+    {gh("nvim-mini/mini.pick"), config = function()
+            require("mini.pick").setup({window = {config = {border = "rounded"}}})
+        end},
+    {gh("nickjvandyke/opencode.nvim")},
+    {
+        gh("stevearc/oil.nvim"),
+        config = function()
+            require("oil").setup(
+                {
+                    lsp_file_methods = {enabled = true, timeout_ms = 1000, autosave_changes = true},
+                    columns = {"icon"},
+                    float = {max_width = 0.3, max_height = 0.6, border = "rounded"},
+                    win_options = {signcolumn = "yes:2"}
+                }
+            )
+        end
+    },
+    {gh("refractalize/oil-git-status.nvim"), config = function()
+            require("oil-git-status").setup()
+        end},
+    {gh("b0o/schemastore.nvim")},
+    {
+        gh("neovim/nvim-lspconfig"),
+        config = function()
+            local lsp = vim.lsp
+            lsp.config("lua_ls", {})
+            lsp.enable("lua_ls")
+            lsp.config("basedpyright", {{settings = {python = {analysis = {diagnosticMode = "openFilesOnly"}}}}})
+            lsp.enable("basedpyright")
+            lsp.config(
+                "jsonls",
+                {settings = {json = {validate = {enable = true}, schemas = require("schemastore").json.schemas()}}}
+            )
+            lsp.enable("jsonls")
+            lsp.enable("wc_language_server")
+            lsp.enable("biome")
+            lsp.enable("emmet_language_server")
+            lsp.enable("rumdl")
+        end
+    },
+    {gh("rafamadriz/friendly-snippets")},
+    {
+        gh("saghen/blink.cmp"),
+        build = "cargo build --release",
+        config = function()
+            require("blink.cmp").setup(
+                {
+                    keymap = {
+                        preset = "default",
+                        ["<Tab>"] = {"select_and_accept", "fallback"},
+                        ["<S-Tab>"] = {"snippet_backward", "fallback"},
+                        ["<CR>"] = {"accept", "fallback"}
+                    },
+                    completion = {menu = {border = "rounded"}, documentation = {auto_show = true}},
+                    sources = {default = {"lsp", "path", "snippets", "buffer"}},
+                    fuzzy = {implementation = "prefer_rust_with_warning"}
+                }
+            )
+        end
+    },
+    {gh("lewis6991/gitsigns.nvim"), config = function()
+            require("gitsigns").setup({current_line_blame = true, current_line_blame_opts = {delay = 300}})
+        end},
+    {gh("nvim-mini/mini.surround"), config = function()
+            require("mini.surround").setup()
+        end},
+    {
+        gh("nvim-treesitter/nvim-treesitter"),
+        build = ":TSUpdate",
+        config = function()
+            require("nvim-treesitter").setup(
+                {
+                    ensure_installed = {"lua", "python", "json", "markdown", "vim", "vimdoc"},
+                    auto_install = true,
+                    highlight = {enable = true},
+                    indent = {enable = true}
+                }
+            )
+        end
+    }
 }
 
--- Ciclo su tutti i plugin
-for _, plugin in ipairs(plugins) do
-	local ok, err = pcall(vim.pack.add, { plugin.repo })
-	if not ok then
-		vim.notify("Errore caricamento " .. plugin.repo .. ": " .. err, vim.log.levels.WARN)
-	elseif plugin.callback then
-		ok, err = pcall(plugin.callback)
-		if not ok then
-			vim.notify("Errore setup " .. plugin.repo .. ": " .. err, vim.log.levels.WARN)
-		end
-	end
-end
+require("lazy").setup(
+    plugins,
+    {
+        defaults = {lazy = false, version = false},
+        install = {colorscheme = {"tokyonight"}},
+        checker = {enabled = true, notify = true}
+    }
+)
 
--- Format on save
+-- ================================
+-- 5️⃣ Format on save
+-- ================================
+vim.api.nvim_create_autocmd(
+    "LspAttach",
+    {
+        group = vim.api.nvim_create_augroup("lsp", {clear = true}),
+        callback = function(args)
+            vim.api.nvim_create_autocmd(
+                "BufWritePre",
+                {
+                    buffer = args.buf,
+                    callback = function()
+                        vim.lsp.buf.format {async = false, id = args.data.client_id}
+                    end
+                }
+            )
+        end
+    }
+)
 
-vim.api.nvim_create_autocmd("LspAttach", {
-	group = vim.api.nvim_create_augroup("lsp", { clear = true }),
-	callback = function(args)
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			buffer = args.buf,
-			callback = function()
-				vim.lsp.buf.format { async = false, id = args.data.client_id }
-			end,
-		})
-	end
-})
-
--- Auto save
-vim.api.nvim_create_autocmd({ "FocusLost", "InsertLeave", "TextChanged" }, {
-	command = "silent! update",
-})
