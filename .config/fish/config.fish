@@ -8,14 +8,6 @@ end
 
 set -g fish_greeting ""
 
-
-# pnpm
-set -gx PNPM_HOME "$HOME/Library/pnpm"
-if not string match -q -- $PNPM_HOME $PATH
-  set -gx PATH "$PNPM_HOME" $PATH
-end
-# pnpm end
-
 # Alias
 alias lg lazygit
 alias ld lazydocker
@@ -33,7 +25,7 @@ function pyenv;
 ; end
 
 # Plugin config
-fish_config theme choose "Catppuccin Mocha"
+set -g fish_theme catppuccin-mocha
 
 # Add ~/.local/bin to PATH
 if test -d "$HOME/.local/bin"
