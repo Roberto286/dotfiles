@@ -1,5 +1,5 @@
 [user]
-	email = roberto.saliola96@gmail.com
+	email = roberto@colossus.
 	name = Roberto Saliola
 [pull]
 	rebase = true
@@ -8,7 +8,7 @@
 	editor = nvim
 [push]
 	autoSetupRemote = true
-[includeIf "gitdir:~/code/personal/"]
+[includeIf "gitdir:~/code/roberto286/"]
     path = ~/.gitconfig-personal
 [init]
 	defaultBranch = main
