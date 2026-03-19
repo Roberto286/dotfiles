@@ -7,6 +7,9 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "edit_predictions": {
+    "provider": "none"
+  },
   "sticky_scroll": {
     "enabled": true
   },
@@ -32,9 +35,6 @@
   },
   "outline_panel": {
     "dock": "right"
-  },
-  "features": {
-    "edit_prediction_provider": "none"
   },
   "languages": {
     "HTML": {
@@ -81,7 +81,7 @@
       }
     }
   },
-  "icon_theme": "Material Icon Theme",
+  "icon_theme": "Zed (Default)",
   "ui_font_size": 14,
   "buffer_font_size": 14,
   "theme": {
@@ -102,7 +102,9 @@
     "scroll_debounce_ms": 500
   },
   "agent": {
-    "always_allow_tool_actions": true,
+    "tool_permissions": {
+      "default": "allow"
+    },
     "profiles": {},
     "default_profile": "write",
     "default_model": {
