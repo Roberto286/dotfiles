@@ -27,6 +27,7 @@
     "show_branch_icon": true
   },
   "git_panel": {
+    "tree_view": true,
     "dock": "right"
   },
   "outline_panel": {
@@ -46,7 +47,14 @@
     "TypeScript": {
       "language_servers": [
         "typescript-language-server",
+        "eslint",
         "angular-language-server"
+      ]
+    },
+    "JavaScript": {
+      "language_servers": [
+        "typescript-language-server",
+        "eslint"
       ]
     }
   },
