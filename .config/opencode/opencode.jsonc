@@ -2,7 +2,10 @@
 	"$schema": "https://opencode.ai/config.json",
 	// Dinamyc context pruning
 	"plugin": [
-		"@tarquinen/opencode-dcp@latest"
+		"@tarquinen/opencode-dcp@latest",
+		"opencode-froggy",
+		"@bastiangx/opencode-unmoji",
+
 	],
 	"mcp": {
 		"context7": {
