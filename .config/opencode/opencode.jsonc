@@ -49,19 +49,5 @@
 				"1280x720"
 			]
 		}
-	},
-	"agent": {
-		"code-reviewer": {
-			"description": "Reviews code for best practices, security, performance and potential issues using Claude Opus with maximum precision",
-			"mode": "subagent",
-			"model": "opencode/big-pickle",
-			"temperature": 0.05,
-			"prompt": "You are an expert code reviewer with deep knowledge of software engineering best practices. Focus on: security vulnerabilities, performance optimization, code maintainability, potential bugs, design patterns, and adherence to language-specific conventions. Provide detailed, actionable feedback with specific examples and suggestions for improvement.",
-			"tools": {
-				"write": false,
-				"edit": false,
-				"bash": false
-			}
-		}
 	}
 }
