@@ -1,53 +1,69 @@
 {
-	"$schema": "https://opencode.ai/config.json",
-	// Dinamyc context pruning
-	"plugin": [
-		"@tarquinen/opencode-dcp@latest",
-		"opencode-froggy",
-		"@bastiangx/opencode-unmoji",
-
-	],
-	"mcp": {
-		"context7": {
-			"type": "local",
-			"command": [
-				"npx",
-				"-y",
-				"@upstash/context7-mcp",
-				"--api-key",
-				"ctx7sk-d397cdc8-1682-415b-801c-2cf4b97af827"
-			]
-		},
-		"Astro docs": {
-			"type": "remote",
-			"url": "https://mcp.docs.astro.build/mcp",
-			"enabled": true
-		},
-		"pdf-reader": {
-			"command": [
-				"npx",
-				"@sylphx/pdf-reader-mcp"
-			],
-			"type": "local"
-		},
-		"chrome-devtools": {
-			"type": "local",
-			"command": [
-				"npx",
-				"-y",
-				"chrome-devtools-mcp@latest"
-			]
-		},
-		"firefox-devtools": {
-			"type": "local",
-			"command": [
-				"npx",
-				"-y",
-				"firefox-devtools-mcp@latest",
-				"--headless",
-				"--viewport",
-				"1280x720"
-			]
-		}
-	}
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+   "chrome-devtools": {
+      "command": [
+        "npx",
+        "-y",
+        "chrome-devtools-mcp@latest"
+      ],
+      "type": "local"
+    },
+    "context7": {
+      "command": [
+        "npx",
+        "-y",
+        "@upstash/context7-mcp",
+        "--api-key",
+        "ctx7sk-d397cdc8-1682-415b-801c-2cf4b97af827"
+      ],
+      "type": "local"
+    },
+    "firefox-devtools": {
+      "command": [
+        "npx",
+        "-y",
+        "firefox-devtools-mcp@latest",
+        "--headless",
+        "--viewport",
+        "1280x720"
+      ],
+      "type": "local"
+    },
+    "github": {
+      "command": [
+        "docker",
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "{file:~/.config/opencode/.github_token}"
+      },
+      "type": "local"
+    },
+    "pdf-reader": {
+      "command": [
+        "npx",
+        "@sylphx/pdf-reader-mcp"
+      ],
+      "type": "local"
+    },
+    "playwright": {
+      "command": [
+        "npx",
+        "@playwright/mcp@latest"
+      ],
+      "enabled": true,
+      "type": "local"
+    }
+  },
+  "plugin": [
+    "@tarquinen/opencode-dcp@latest",
+    "opencode-froggy",
+    "@bastiangx/opencode-unmoji"
+  ]
 }
