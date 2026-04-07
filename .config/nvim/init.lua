@@ -16,6 +16,12 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+local function get_project_root()
+	local cwd = vim.fn.getcwd()
+	local root = vim.fs.find({ ".git" }, { upward = true })[1]
+	return root and vim.fs.dirname(root) or cwd
+end
+
 -- ================================
 -- 2️⃣ Vim options
 -- ================================
@@ -96,16 +102,27 @@ map("n", "<Leader>q", ":q<CR>", { desc = "Close window" })
 map("n", "<leader>e", "<CMD>Oil --float<CR>", { desc = "Open Oil" })
 map({ "n", "v", "x" }, "<leader>rc", "<Cmd>edit $MYVIMRC<CR>", { desc = "Edit: " .. vim.fn.expand("$MYVIMRC") })
 
--- Mini.pick
+-- Copy full path to clipboard
+vim.keymap.set("n", "<leader>fp", ':let @+ = expand("%:p")<CR>', { desc = "Copy full path" })
+
+-- Copy relative path to clipboard
+vim.keymap.set("n", "<leader>fr", ':let @+ = expand("%")<CR>', { desc = "Copy relative path" })
+
+-- Copy filename only
+vim.keymap.set("n", "<leader>fn", ':let @+ = expand("%:t")<CR>', { desc = "Copy filename" })
+
+-- Telescope
 map("n", "<leader>ff", function()
-	require("mini.pick").builtin.files()
+	require("telescope.builtin").find_files({
+		cwd = get_project_root(),
+	})
 end, { desc = "Find files" })
-map("n", "<leader>fg", function()
-	require("mini.pick").builtin.grep_live()
-end, { desc = "Live grep" })
-map("n", "<leader>fb", function()
-	require("mini.pick").builtin.buffers()
-end, { desc = "Find buffers" })
+map("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", { desc = "Live grep" })
+map("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "Find buffers" })
+map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "Help tags" })
+map("n", "<leader>fr", "<cmd>Telescope oldfiles<CR>", { desc = "Recent files" })
+map("n", "<leader>fc", "<cmd>Telescope commands<CR>", { desc = "Commands" })
+map("n", "<leader>fk", "<cmd>Telescope keymaps<CR>", { desc = "Keymaps" })
 
 -- Clipboard
 map({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank → system clipboard" })
@@ -188,11 +205,43 @@ local plugins = {
 	},
 	{ "echasnovski/mini.icons", lazy = false, opts = {} },
 	{ "echasnovski/mini.surround", event = "BufReadPost", opts = {} },
+	-- Telescope
 	{
-		"echasnovski/mini.pick",
-		cmd = "Pick",
-		opts = {},
-		-- winborder = "rounded" is already set globally via vim.opt.winborder
+		"nvim-telescope/telescope.nvim",
+		event = "VeryLazy",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+			"nvim-tree/nvim-web-devicons",
+		},
+		config = function()
+			local telescope = require("telescope")
+			local actions = require("telescope.actions")
+			telescope.setup({
+				defaults = {
+					mappings = {
+						i = {
+							["<C-j>"] = actions.move_selection_next,
+							["<C-k>"] = actions.move_selection_previous,
+							["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+						},
+					},
+					borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+				},
+				pickers = {
+					find_files = {
+						theme = "dropdown",
+						previewer = false,
+					},
+					buffers = {
+						sort_mru = true,
+						sort_lastused = true,
+					},
+				},
+			})
+			-- Carica l'estensione fzf-native
+			telescope.load_extension("fzf")
+		end,
 	},
 	{
 		"echasnovski/mini.clue",
