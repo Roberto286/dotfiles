@@ -139,6 +139,19 @@ end, { desc = "Toggle line blame" })
 map("n", "<Leader>mp", ":MarkdownPreviewToggle<CR>", { desc = "Markdown Preview toggle" })
 map("n", "<Leader>ms", ":MarkdownPreviewStop<CR>", { desc = "Markdown Preview stop" })
 
+-- Auto-expand brackets on <CR>
+map("i", "<CR>", function()
+	local line = vim.api.nvim_get_current_line()
+	local col = vim.api.nvim_win_get_cursor(0)[2]
+	local before = line:sub(col, col)
+	local after = line:sub(col + 1, col + 1)
+	local pairs = { ["{"] = "}", ["["] = "]", ["("] = ")" }
+	if pairs[before] == after then
+		return "<CR><Esc>O"
+	end
+	return "<CR>"
+end, { expr = true, desc = "Expand brackets on Enter" })
+
 -- Disable arrow keys
 local function no_arrows(direction, hint)
 	return function()
