@@ -43,6 +43,7 @@ vim.opt.showmatch = true
 vim.opt.exrc = true
 vim.opt.autoread = true
 vim.opt.winbar = "%{expand('%:p')}"
+vim.opt.updatetime = 300
 
 -- Folding
 vim.opt.foldmethod = "expr"
@@ -66,6 +67,37 @@ vim.api.nvim_create_autocmd({ "FocusLost", "InsertLeave", "TextChanged" }, {
 	command = "silent! update",
 })
 
+-- Diagnostics
+vim.diagnostic.config({
+	severity_sort = true,
+	virtual_text = { prefix = "●", source = "if_many" },
+	float = { border = "rounded", source = true },
+})
+
+-- LSP: inlay hints + document highlight
+vim.api.nvim_create_autocmd("LspAttach", {
+	callback = function(ev)
+		local client = vim.lsp.get_client_by_id(ev.data.client_id)
+		if not client then return end
+		if client.server_capabilities.inlayHintProvider then
+			vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+		end
+		if client.server_capabilities.documentHighlightProvider then
+			local g = vim.api.nvim_create_augroup("lsp_highlight_" .. ev.buf, { clear = true })
+			vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+				buffer = ev.buf,
+				group = g,
+				callback = vim.lsp.buf.document_highlight,
+			})
+			vim.api.nvim_create_autocmd("CursorMoved", {
+				buffer = ev.buf,
+				group = g,
+				callback = vim.lsp.buf.clear_references,
+			})
+		end
+	end,
+})
+
 -- ================================
 -- 3️⃣ Keymaps
 -- ================================
@@ -82,17 +114,21 @@ map("n", "<Leader>tt", ":belowright split | terminal<CR>i", { desc = "Open termi
 map("t", "<Esc>", [[<C-\><C-n>]], { desc = "Terminal → Normal mode" })
 
 -- LSP
-map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
-map({ "n", "v" }, "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
-map("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+map({ "n", "v" }, "<leader>ca", "<cmd>Lspsaga code_action<CR>", { desc = "Code Action" })
+map({ "n", "v" }, "<leader>rn", "<cmd>Lspsaga rename<CR>", { desc = "Rename" })
+map("n", "gd", "<cmd>Lspsaga goto_definition<CR>", { desc = "Go to definition" })
 map("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
-map("n", "gr", vim.lsp.buf.references, { desc = "Go to references" })
-map("n", "gi", vim.lsp.buf.implementation, { desc = "Go to implementation" })
-map("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
-map("n", "gO", vim.lsp.buf.document_symbol, { desc = "Document symbols" })
-map({ "n", "v", "x" }, "gl", vim.diagnostic.open_float, { desc = "Open LSP diagnostics for current line" })
-map("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
-map("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+map("n", "gr", "<cmd>Lspsaga finder<CR>", { desc = "Finder (refs + impl)" })
+map("n", "K", "<cmd>Lspsaga hover_doc<CR>", { desc = "Hover documentation" })
+map("n", "gO", "<cmd>Lspsaga outline<CR>", { desc = "Symbol outline" })
+map("n", "gpd", "<cmd>Lspsaga peek_definition<CR>", { desc = "Peek definition" })
+map("n", "gpt", "<cmd>Lspsaga peek_type_definition<CR>", { desc = "Peek type definition" })
+map({ "n", "v", "x" }, "gl", "<cmd>Lspsaga show_line_diagnostics<CR>", { desc = "Diagnostics (line)" })
+map("n", "[d", "<cmd>Lspsaga diagnostic_jump_prev<CR>", { desc = "Previous diagnostic" })
+map("n", "]d", "<cmd>Lspsaga diagnostic_jump_next<CR>", { desc = "Next diagnostic" })
+map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<CR>", { desc = "Diagnostics (project)" })
+map("n", "<leader>xb", "<cmd>Trouble diagnostics toggle filter.buf=0<CR>", { desc = "Diagnostics (buffer)" })
+map("n", "<leader>xs", "<cmd>Trouble symbols toggle<CR>", { desc = "Symbols" })
 
 -- File commands
 map("n", "<Leader>w", ":write<CR>", { desc = "Save file" })
@@ -210,6 +246,7 @@ local plugins = {
 	},
 
 	-- Mini plugins
+	{ "echasnovski/mini.statusline", event = "VeryLazy", opts = {} },
 	{ "echasnovski/mini.pairs", event = "InsertEnter", opts = {} },
 	{
 		"echasnovski/mini.indentscope",
@@ -296,13 +333,15 @@ local plugins = {
 
 	-- LSP
 	{ "b0o/schemastore.nvim", lazy = true },
-	{ "rafamadriz/friendly-snippets", lazy = true },
 	{
 		"neovim/nvim-lspconfig",
 		event = "BufReadPre",
-		dependencies = { "b0o/schemastore.nvim" },
+		dependencies = { "b0o/schemastore.nvim", "hrsh7th/cmp-nvim-lsp" },
 		config = function()
 			local lsp = vim.lsp
+			lsp.config("*", {
+				capabilities = require("cmp_nvim_lsp").default_capabilities(),
+			})
 			lsp.config("lua_ls", {})
 			lsp.enable("lua_ls")
 			lsp.config("basedpyright", {
@@ -326,22 +365,67 @@ local plugins = {
 
 	-- Completion
 	{
-		"saghen/blink.cmp",
+		"hrsh7th/nvim-cmp",
 		event = "InsertEnter",
-		build = "cargo build --release",
-		dependencies = { "rafamadriz/friendly-snippets" },
-		opts = {
-			keymap = {
-				preset = "default",
-				["<Tab>"] = { "select_and_accept", "fallback" },
-				["<S-Tab>"] = { "snippet_backward", "fallback" },
-				["<CR>"] = { "accept", "fallback" },
+		dependencies = {
+			"hrsh7th/cmp-nvim-lsp",
+			"hrsh7th/cmp-path",
+			"hrsh7th/cmp-buffer",
+			{
+				"L3MON4D3/LuaSnip",
+				build = "make install_jsregexp",
+				dependencies = { "rafamadriz/friendly-snippets" },
+				config = function()
+					require("luasnip.loaders.from_vscode").lazy_load()
+				end,
 			},
-			completion = { documentation = { auto_show = true } },
-			-- menu border inherited from vim.opt.winborder
-			sources = { default = { "lsp", "path", "snippets", "buffer" } },
-			fuzzy = { implementation = "prefer_rust_with_warning" },
+			"saadparwaiz1/cmp_luasnip",
 		},
+		config = function()
+			local cmp = require("cmp")
+			local luasnip = require("luasnip")
+
+			cmp.setup({
+				snippet = {
+					expand = function(args)
+						luasnip.lsp_expand(args.body)
+					end,
+				},
+				window = {
+					completion = cmp.config.window.bordered(),
+					documentation = cmp.config.window.bordered(),
+				},
+				completion = { completeopt = "menu,menuone,noinsert" },
+				mapping = cmp.mapping.preset.insert({
+					["<Tab>"] = cmp.mapping(function(fallback)
+						if cmp.visible() then
+							cmp.confirm({ select = true })
+						elseif luasnip.expand_or_jumpable() then
+							luasnip.expand_or_jump()
+						else
+							fallback()
+						end
+					end, { "i", "s" }),
+					["<S-Tab>"] = cmp.mapping(function(fallback)
+						if luasnip.jumpable(-1) then
+							luasnip.jump(-1)
+						else
+							fallback()
+						end
+					end, { "i", "s" }),
+					["<CR>"] = cmp.mapping.confirm({ select = false }),
+					["<C-Space>"] = cmp.mapping.complete(),
+					["<C-e>"] = cmp.mapping.abort(),
+				}),
+				sources = cmp.config.sources({
+					{ name = "nvim_lsp" },
+					{ name = "luasnip" },
+					{ name = "path" },
+				}, {
+					{ name = "buffer" },
+				}),
+			})
+		end,
 	},
 
 	-- Git
@@ -358,13 +442,14 @@ local plugins = {
 		build = ":TSUpdate",
 		config = function()
 			require("nvim-treesitter").setup({
-				ensure_installed = { "lua", "python", "json", "markdown", "vim", "vimdoc" },
+				ensure_installed = { "lua", "python", "json", "markdown", "vim", "vimdoc", "typescript", "tsx", "javascript" },
 				auto_install = true,
 				highlight = { enable = true },
 				indent = { enable = true },
 			})
 		end,
 	},
+	{ "nvim-treesitter/nvim-treesitter-context", event = "BufReadPost", opts = { max_lines = 3 } },
 
 	-- Markdown Preview
 	{
@@ -401,6 +486,24 @@ local plugins = {
 
 	-- Line numbers
 	{ "shrynx/line-numbers.nvim", event = "BufReadPost", opts = {} },
+
+	-- Diagnostics panel
+	{
+		"folke/trouble.nvim",
+		cmd = "Trouble",
+		opts = { focus = true },
+	},
+
+	-- LSP UI
+	{
+		"nvimdev/lspsaga.nvim",
+		event = "LspAttach",
+		opts = {
+			ui = { border = "rounded" },
+			symbol_in_winbar = { enable = false }, -- already have winbar showing filepath
+			lightbulb = { enable = false },
+		},
+	},
 }
 
 require("lazy").setup(plugins, {
