@@ -78,7 +78,9 @@ vim.diagnostic.config({
 vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function(ev)
 		local client = vim.lsp.get_client_by_id(ev.data.client_id)
-		if not client then return end
+		if not client then
+			return
+		end
 		if client.server_capabilities.inlayHintProvider then
 			vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
 		end
@@ -132,7 +134,7 @@ map("n", "<leader>xs", "<cmd>Trouble symbols toggle<CR>", { desc = "Symbols" })
 
 -- File commands
 map("n", "<Leader>w", ":write<CR>", { desc = "Save file" })
-map("n", "<Leader>a", ":wqa<CR>", { desc = "Save all and quit" })
+map("n", "<Leader>A", ":wqa<CR>", { desc = "Save all and quit" })
 map("n", "<Leader>x", ":wq<CR>", { desc = "Save and quit" })
 map("n", "<Leader>q", ":q<CR>", { desc = "Close window" })
 map("n", "<leader>e", "<CMD>Oil --float<CR>", { desc = "Open Oil" })
@@ -202,24 +204,6 @@ map("n", "<Up>", no_arrows("up", "k"), { desc = "Disable ↑" })
 map("n", "<Down>", no_arrows("down", "j"), { desc = "Disable ↓" })
 map("n", "<Left>", no_arrows("left", "h"), { desc = "Disable ←" })
 map("n", "<Right>", no_arrows("right", "l"), { desc = "Disable →" })
-
--- OpenCode
-local opencode = function(action, opts)
-	return function()
-		require("opencode")[action](opts)
-	end
-end
-map({ "n", "x" }, "<C-a>", opencode("ask", { prompt = "@this: ", submit = true }), { desc = "Ask opencode…" })
-map({ "n", "x" }, "<C-x>", opencode("select"), { desc = "Execute opencode action…" })
-map({ "n", "t" }, "<C-.>", opencode("toggle"), { desc = "Toggle opencode" })
-map({ "n", "x" }, "go", function()
-	return require("opencode").operator("@this ")
-end, { desc = "Add range to opencode", expr = true })
-map("n", "goo", function()
-	return require("opencode").operator("@this ") .. "_"
-end, { desc = "Add line to opencode", expr = true })
-map("n", "<S-C-u>", opencode("command", "session.half.page.up"), { desc = "Scroll opencode up" })
-map("n", "<S-C-d>", opencode("command", "session.half.page.down"), { desc = "Scroll opencode down" })
 
 -- Increment/decrement (remapped because C-a/C-x used by OpenCode)
 map("n", "+", "<C-a>", { desc = "Increment under cursor" })
@@ -328,8 +312,28 @@ local plugins = {
 		},
 	},
 
-	-- OpenCode
-	{ "nickjvandyke/opencode.nvim", lazy = true },
+	-- Claude Code
+	{
+		"coder/claudecode.nvim",
+		config = function()
+			require("claudecode").setup({
+				terminal = { provider = "native" },
+			})
+		end,
+		keys = {
+			{ "<leader>a", nil, desc = "AI/Claude Code" },
+			{ "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
+			{ "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
+			{ "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
+			{ "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
+			{ "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select model" },
+			{ "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
+			{ "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send selection" },
+			{ "<leader>as", "<cmd>ClaudeCodeTreeAdd<cr>", ft = { "oil" }, desc = "Add from Oil" },
+			{ "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
+			{ "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
+		},
+	},
 
 	-- LSP
 	{ "b0o/schemastore.nvim", lazy = true },
@@ -442,7 +446,17 @@ local plugins = {
 		build = ":TSUpdate",
 		config = function()
 			require("nvim-treesitter").setup({
-				ensure_installed = { "lua", "python", "json", "markdown", "vim", "vimdoc", "typescript", "tsx", "javascript" },
+				ensure_installed = {
+					"lua",
+					"python",
+					"json",
+					"markdown",
+					"vim",
+					"vimdoc",
+					"typescript",
+					"tsx",
+					"javascript",
+				},
 				auto_install = true,
 				highlight = { enable = true },
 				indent = { enable = true },
