@@ -6,6 +6,7 @@
 [core]
 	autocrlf = input
 	editor = nvim
+	hooksPath = /Users/roberto/.config/git/hooks
 [push]
 	autoSetupRemote = true
 [includeIf "gitdir:~/code/roberto286/"]
