@@ -1,5 +1,5 @@
 function dev
-    set session "dev"
+    set session (basename (pwd))
 
     # Don't create a duplicate session
     if tmux has-session -t $session 2>/dev/null
@@ -17,7 +17,7 @@ function dev
 
     # claude
     tmux new-window -t $session -n claude 
-    tmux send-keys -t $session:claude "claude" Enter
+    tmux send-keys -t $session:claude "headroom wrap claude" Enter
 
     # plain shell — land here on attach
     tmux new-window -t $session -n shell
