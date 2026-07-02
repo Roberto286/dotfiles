@@ -247,7 +247,6 @@ local plugins = {
 
 	-- Mini plugins
 	{ "echasnovski/mini.statusline", event = "VeryLazy", opts = {} },
-	{ "echasnovski/mini.pairs", event = "InsertEnter", opts = {} },
 	{
 		"echasnovski/mini.indentscope",
 		event = "BufReadPost",
@@ -371,6 +370,8 @@ local plugins = {
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-path",
 			"hrsh7th/cmp-buffer",
+			"hrsh7th/cmp-cmdline",
+			"onsails/lspkind.nvim",
 			{
 				"L3MON4D3/LuaSnip",
 				build = "make install_jsregexp",
@@ -384,6 +385,53 @@ local plugins = {
 		config = function()
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
+			local lspkind = require("lspkind")
+
+			-- Penalizza gli snippet a parità di score: LSP vince sempre
+			-- a meno che lo snippet non sia un match quasi esatto
+			local function deprioritize_snippet(entry1, entry2)
+				local k1 = entry1:get_kind() == cmp.lsp.CompletionItemKind.Snippet
+				local k2 = entry2:get_kind() == cmp.lsp.CompletionItemKind.Snippet
+				if k1 and not k2 then
+					return false
+				end
+				if k2 and not k1 then
+					return true
+				end
+			end
+
+			-- Match all'inizio della parola batte sempre un fuzzy match interno
+			-- (comportamento tipo VSCode: prefix match > substring match)
+			local function prefix_match(entry1, entry2)
+				local cursor_before_line = vim.api.nvim_get_current_line():sub(1, vim.api.nvim_win_get_cursor(0)[2])
+				local word = cursor_before_line:match("[%w_]+$") or ""
+				if word == "" then
+					return nil
+				end
+
+				local label1 = entry1:get_completion_item().label
+				local label2 = entry2:get_completion_item().label
+
+				local starts1 = label1:lower():find("^" .. vim.pesc(word:lower())) ~= nil
+				local starts2 = label2:lower():find("^" .. vim.pesc(word:lower())) ~= nil
+
+				if starts1 and not starts2 then
+					return true
+				end
+				if starts2 and not starts1 then
+					return false
+				end
+			end
+
+			-- Solo i buffer effettivamente visibili in una finestra,
+			-- non tutti quelli caricati in memoria
+			local function visible_bufnrs()
+				local bufs = {}
+				for _, win in ipairs(vim.api.nvim_list_wins()) do
+					bufs[vim.api.nvim_win_get_buf(win)] = true
+				end
+				return vim.tbl_keys(bufs)
+			end
 
 			cmp.setup({
 				snippet = {
@@ -395,7 +443,30 @@ local plugins = {
 					completion = cmp.config.window.bordered(),
 					documentation = cmp.config.window.bordered(),
 				},
-				completion = { completeopt = "menu,menuone,noinsert" },
+				completion = {
+					completeopt = "menu,menuone,noinsert",
+				},
+				experimental = {
+					ghost_text = true, -- anteprima inline tipo VSCode
+				},
+
+				sorting = {
+					priority_weight = 2,
+					comparators = {
+						cmp.config.compare.offset,
+						cmp.config.compare.exact,
+						prefix_match,
+						cmp.config.compare.score,
+						cmp.config.compare.sort_text, -- rispetta l'ordine nativo di vtsls/tsserver
+						deprioritize_snippet,
+						cmp.config.compare.recently_used,
+						cmp.config.compare.locality,
+						cmp.config.compare.kind,
+						cmp.config.compare.length,
+						cmp.config.compare.order,
+					},
+				},
+
 				mapping = cmp.mapping.preset.insert({
 					["<Tab>"] = cmp.mapping(function(fallback)
 						if cmp.visible() then
@@ -417,17 +488,76 @@ local plugins = {
 					["<C-Space>"] = cmp.mapping.complete(),
 					["<C-e>"] = cmp.mapping.abort(),
 				}),
+
 				sources = cmp.config.sources({
-					{ name = "nvim_lsp" },
-					{ name = "luasnip" },
+					{ name = "nvim_lsp", priority = 1000 },
+					{ name = "luasnip", priority = 750, max_item_count = 3 },
+					{ name = "path", priority = 500 },
+				}, {
+					{
+						name = "buffer",
+						priority = 100,
+						max_item_count = 3,
+						keyword_length = 4,
+						option = { get_bufnrs = visible_bufnrs },
+					},
+				}),
+
+				formatting = {
+					format = lspkind.cmp_format({
+						mode = "symbol_text",
+						maxwidth = 50,
+						ellipsis_char = "...",
+						symbol_map = {
+							Text = "󰉿",
+							Method = "󰆧",
+							Function = "󰊕",
+							Constructor = "",
+							Field = "󰜢",
+							Variable = "󰀫",
+							Class = "󰠱",
+							Interface = "",
+							Module = "",
+							Property = "󰜢",
+							Unit = "󰑭",
+							Value = "󰎠",
+							Enum = "",
+							Keyword = "󰌋",
+							Snippet = "",
+							Color = "󰏘",
+							File = "󰈙",
+							Reference = "󰈇",
+							Folder = "󰉋",
+							EnumMember = "",
+							Constant = "󰏿",
+							Struct = "󰙅",
+							Event = "",
+							Operator = "󰆕",
+							TypeParameter = "󰊄",
+						},
+					}),
+				},
+			})
+
+			-- Command line completion (':')
+			cmp.setup.cmdline(":", {
+				mapping = cmp.mapping.preset.cmdline(),
+				sources = cmp.config.sources({
 					{ name = "path" },
 				}, {
-					{ name = "buffer" },
+					{ name = "cmdline" },
 				}),
+			})
+
+			-- Search completion ('/', '?')
+			cmp.setup.cmdline({ "/", "?" }, {
+				mapping = cmp.mapping.preset.cmdline(),
+				sources = {
+					{ name = "buffer" },
+				},
 			})
 		end,
 	},
-
 	-- Git
 	{
 		"lewis6991/gitsigns.nvim",
@@ -503,6 +633,23 @@ local plugins = {
 			symbol_in_winbar = { enable = false }, -- already have winbar showing filepath
 			lightbulb = { enable = false },
 		},
+	},
+
+	{
+		"windwp/nvim-autopairs",
+		event = "InsertEnter",
+		config = function()
+			local autopairs = require("nvim-autopairs")
+			autopairs.setup({
+				check_ts = true, -- usa treesitter per evitare falsi positivi
+				disable_filetype = { "TelescopePrompt" },
+				fast_wrap = {}, -- abilita il wrap rapido di selezioni con <M-e>
+			})
+
+			-- Integrazione con nvim-cmp: auto-inserisce () su Function/Method
+			local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+			require("cmp").event:on("confirm_done", cmp_autopairs.on_confirm_done())
+		end,
 	},
 }
 
