@@ -9,10 +9,10 @@ function update_system
     npm update -g
 
     echo "==> rustup self update"
-    rustup self update
+    gtimeout 60 rustup self update
 
     echo "==> rustup update"
-    rustup update --no-self-update
+    gtimeout 120 rustup update --no-self-update
 
     echo "==> fisher update"
     fisher update
