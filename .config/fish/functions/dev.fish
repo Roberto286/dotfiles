@@ -17,7 +17,7 @@ function dev
 
     # claude
     tmux new-window -t $session -n claude 
-    tmux send-keys -t $session:claude "headroom wrap claude" Enter
+    tmux send-keys -t $session:claude "headroom wrap claude --no-serena" Enter
 
     # plain shell — land here on attach
     tmux new-window -t $session -n shell
