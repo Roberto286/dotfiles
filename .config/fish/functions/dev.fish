@@ -16,8 +16,8 @@ function dev
     tmux send-keys -t $session:git "lazygit" Enter
 
     # claude
-    tmux new-window -t $session -n claude 
-    tmux send-keys -t $session:claude "headroom wrap claude --no-serena" Enter
+    tmux new-window -t $session -n AI 
+    tmux send-keys -t $session:claude "omp" Enter
 
     # plain shell — land here on attach
     tmux new-window -t $session -n shell
