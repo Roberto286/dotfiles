@@ -15,9 +15,9 @@ function dev
     tmux new-window -t $session -n git
     tmux send-keys -t $session:git "lazygit" Enter
 
-    # opencode
-    tmux new-window -t $session -n opencode
-    tmux send-keys -t $session:opencode "opencode" Enter
+    # claude
+    tmux new-window -t $session -n AI 
+    tmux send-keys -t $session:claude "omp" Enter
 
     # plain shell — land here on attach
     tmux new-window -t $session -n shell
