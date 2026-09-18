@@ -1,0 +1,39 @@
+providers:
+  webSearchOrder:
+    []
+modelRoles:
+  default: opencode-go/qwen3.8-max
+  advisor: opencode-go/deepseek-v4-pro:auto
+  commit: opencode-go/deepseek-v4-flash
+  smol: opencode-go/deepseek-v4-flash:auto
+  tiny: opencode-go/deepseek-v4-flash:auto
+  vision: opencode-go/deepseek-v4-flash-vision-exp:auto
+  task: opencode-go/kimi-k3:auto
+  plan: opencode-go/deepseek-v4-pro:auto
+symbolPreset: nerd
+composer:
+  shape: box
+theme:
+  dark: titanium
+  light: light
+setupVersion: 2
+hideThinkingBlock: true
+memory:
+  backend: mnemopi
+autolearn:
+  enabled: true
+advisor:
+  enabled: true
+tier:
+  advisor: none
+defaultThinkingLevel: auto
+retry:
+  fallbackChains:
+    default:
+      - opencode-go/deepseek-v4-flash
+      - opencode-zen/deepseek-v4-flash-free
+      - opencode-zen/nemotron-3-ultra-free
+extensions:
+  - /Users/roberto/.omp/agent/extensions/combo-toggle/index.js
+  - /Users/roberto/.omp/plugins/node_modules/@dietrichgebert/ponytail/pi-extension/index.js
+  - /Users/roberto/.omp/agent/extensions/shared/mode-reinforcement.js
