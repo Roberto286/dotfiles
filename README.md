@@ -1,55 +1,35 @@
-# Dotfiles (bare Git repository)
+# dotfiles
 
-Questo repository contiene i miei **dotfiles** gestiti tramite **Git bare repository**.
-L’obiettivo è poter replicare la stessa configurazione (shell, editor, tool) su più macchine in modo semplice e riproducibile.
+Dotfiles managed via [chezmoi](https://www.chezmoi.io/).
 
-## Reference
-
-La struttura e l’approccio usati in questo repository seguono questa guida (che considero la fonte di riferimento):
-
-https://github.com/raven2cz/geek-room/blob/main/git-bare-repo/git-bare-repo.md
-
----
-
-## How it works (in breve)
-
-- Il repository è un **bare repo**
-- I file vengono versionati direttamente nel `$HOME`
-- Un alias (es. `dotfiles`) viene usato al posto di `git`
-- Le configurazioni (es. `fish`, `neovim`, ecc.) sono caricate automaticamente dai rispettivi programmi
-
-Se un file è versionato qui, **non va ricreato manualmente** su una nuova macchina.
-
----
-
-## How to install (nuova macchina)
-
-### 1. Prerequisiti
-
-Assicurati di avere installato almeno:
-
-- `git`
-- `fish`
-
-Opzionali ma consigliati (dipendono dai dotfiles presenti):
-- `neovim`
-- `ripgrep`
-- `fd`
-- `lazygit`
-- altri tool referenziati negli alias o config
-
-> Nota: gli alias e le config funzionano **solo se i binari esistono**.
-
----
-
-### 2. Clone del bare repository
+## Quick Start
 
 ```bash
-git clone --bare <REPO_URL> ~/.dotfiles
+chezmoi init --apply https://github.com/Roberto286/dotfiles.git
 ```
 
-### 3. Setup automatizzato
+This will initialize chezmoi with this repo and apply the configuration to your home directory.
 
-```bash
-curl -sL https://raw.githubusercontent.com/Roberto286/dotfiles/refs/heads/master/bootstrap.sh | bash
-```
+## What's Managed
+
+- **Fish shell** (`~/.config/fish/`) — shell config, functions, plugins
+- **Neovim** (`~/.config/nvim/`) — editor config and plugin setup
+- **Zed** (`~/.config/zed/`) — settings, keymaps, tasks
+- **Tmux** (`~/.tmux.conf`) — terminal multiplexer config
+- **OpenCode** (`~/.config/opencode/`) — custom editor config
+- **Git identity split** (`.gitconfig*`) — separate personal and dotfiles repo configs
+
+## What's NOT Here
+
+**Hyprland/Desktop configuration** is NOT managed by this repo. It lives in the [fawos](https://github.com/Roberto286/fawos) OS image repo alongside the custom Lua DSL desktop build.
+
+The `.config/hypr/` and `.config/noctalia/` directories were removed in the migration to chezmoi; they are superseded by fawos's own Hyprland/DMS build.
+
+## Source Layout
+
+Files prefixed with `dot_` in the source repo map to a leading `.` in your home directory:
+- `dot_config/` → `~/.config/`
+- `dot_gitconfig` → `~/.gitconfig`
+- `dot_tmux.conf` → `~/.tmux.conf`
+
+See [chezmoi's source state attributes](https://www.chezmoi.io/reference/source-state-attributes/) for details on the naming convention.
