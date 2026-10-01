@@ -141,13 +141,10 @@ map("n", "<leader>e", "<CMD>Oil --float<CR>", { desc = "Open Oil" })
 map({ "n", "v", "x" }, "<leader>rc", "<Cmd>edit $MYVIMRC<CR>", { desc = "Edit: " .. vim.fn.expand("$MYVIMRC") })
 
 -- Copy full path to clipboard
-vim.keymap.set("n", "<leader>fp", ':let @+ = expand("%:p")<CR>', { desc = "Copy full path" })
-
--- Copy relative path to clipboard
-vim.keymap.set("n", "<leader>fr", ':let @+ = expand("%")<CR>', { desc = "Copy relative path" })
+map("n", "<leader>fp", ':let @+ = expand("%:p")<CR>', { desc = "Copy full path" })
 
 -- Copy filename only
-vim.keymap.set("n", "<leader>fn", ':let @+ = expand("%:t")<CR>', { desc = "Copy filename" })
+map("n", "<leader>fn", ':let @+ = expand("%:t")<CR>', { desc = "Copy filename" })
 
 -- Telescope
 map("n", "<leader>ff", function()
@@ -205,7 +202,7 @@ map("n", "<Down>", no_arrows("down", "j"), { desc = "Disable ↓" })
 map("n", "<Left>", no_arrows("left", "h"), { desc = "Disable ←" })
 map("n", "<Right>", no_arrows("right", "l"), { desc = "Disable →" })
 
--- Increment/decrement (remapped because C-a/C-x used by OpenCode)
+-- Increment/decrement (remapped because C-a/C-x used by Claude Code)
 map("n", "+", "<C-a>", { desc = "Increment under cursor" })
 map("n", "-", "<C-x>", { desc = "Decrement under cursor" })
 
@@ -345,7 +342,6 @@ local plugins = {
 			lsp.config("*", {
 				capabilities = require("cmp_nvim_lsp").default_capabilities(),
 			})
-			lsp.config("lua_ls", {})
 			lsp.enable("lua_ls")
 			lsp.config("basedpyright", {
 				settings = { python = { analysis = { diagnosticMode = "openFilesOnly" } } },
@@ -512,33 +508,6 @@ local plugins = {
 						mode = "symbol_text",
 						maxwidth = 50,
 						ellipsis_char = "...",
-						symbol_map = {
-							Text = "󰉿",
-							Method = "󰆧",
-							Function = "󰊕",
-							Constructor = "",
-							Field = "󰜢",
-							Variable = "󰀫",
-							Class = "󰠱",
-							Interface = "",
-							Module = "",
-							Property = "󰜢",
-							Unit = "󰑭",
-							Value = "󰎠",
-							Enum = "",
-							Keyword = "󰌋",
-							Snippet = "",
-							Color = "󰏘",
-							File = "󰈙",
-							Reference = "󰈇",
-							Folder = "󰉋",
-							EnumMember = "",
-							Constant = "󰏿",
-							Struct = "󰙅",
-							Event = "",
-							Operator = "󰆕",
-							TypeParameter = "󰊄",
-						},
 					}),
 				},
 			})
