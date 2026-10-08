@@ -17,7 +17,7 @@ function dev
 
     # claude
     tmux new-window -t $session -n AI 
-    tmux send-keys -t $session:claude "omp" Enter
+    tmux send-keys -t $session:AI "headroom wrap omp" Enter
 
     # plain shell — land here on attach
     tmux new-window -t $session -n shell
