@@ -14,5 +14,5 @@
 	path = ~/.gitconfig-work
 [init]
 	defaultBranch = main
-[includeIf "gitdir:~/.dotfiles/"]
+[includeIf "gitdir:~/.dotfiles"]
 	path = ~/.gitconfig-dotfiles
