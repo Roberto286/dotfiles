@@ -14,17 +14,9 @@ alias ld lazydocker
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
 alias lg-dotfiles='lazygit --git-dir=$HOME/.dotfiles --work-tree=$HOME'
 # Alias end
-# Alias end
 
 # Generated for envman. Do not edit.
 test -s ~/.config/envman/load.fish; and source ~/.config/envman/load.fish
-
-# This fixes the shell startup slowdown
-function pyenv;
-    eval "$(command pyenv init -)"
-
-    pyenv "$argv"
-; end
 
 # Plugin config
 set -g fish_theme catppuccin-mocha
@@ -34,6 +26,4 @@ if test -d "$HOME/.local/bin"
     fish_add_path $HOME/.local/bin
 end
 
-# opencode
-fish_add_path /home/roberto/.opencode/bin
 mise activate fish | source

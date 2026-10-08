@@ -1,5 +1,5 @@
 function dev
-    set session (basename (pwd))
+    set session "dev"
 
     # Don't create a duplicate session
     if tmux has-session -t $session 2>/dev/null
@@ -15,9 +15,9 @@ function dev
     tmux new-window -t $session -n git
     tmux send-keys -t $session:git "lazygit" Enter
 
-    # AI 
+    # claude
     tmux new-window -t $session -n AI 
-    tmux send-keys -t $session:omp "headroom wrap omp" Enter
+    tmux send-keys -t $session:AI "headroom wrap omp" Enter
 
     # plain shell — land here on attach
     tmux new-window -t $session -n shell
