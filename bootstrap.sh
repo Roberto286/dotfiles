@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
-# Dotfiles bootstrap (bare repo) for macOS (branch "mac") and Arch (branch "arch").
+# Dotfiles bootstrap (bare repo) for macOS (branch "mac"), Arch (branch "arch")
+# and fawos/bootc (branch "fawos").
 # Usage: sh -c "$(curl -fsSL https://raw.githubusercontent.com/Roberto286/dotfiles/master/bootstrap.sh)"
 # Override the branch with DOTFILES_BRANCH=<name>. Safe to re-run.
+# --no-install: skip package installation (image already provides the tools).
 set -eu
 
 REPO_HTTPS="https://github.com/Roberto286/dotfiles.git" # clone without SSH keys
@@ -12,6 +14,9 @@ BACKUP_DIR="$HOME/.dotfiles-backup"
 log() { printf ':: %s\n' "$*"; }
 has() { command -v "$1" >/dev/null 2>&1; }
 dotfiles() { git --git-dir="$DOTFILES_DIR" --work-tree="$HOME" "$@"; }
+
+NO_INSTALL=0
+[ "${1:-}" = "--no-install" ] && NO_INSTALL=1
 
 # 1. Package manager
 OS="$(uname -s)"
@@ -26,12 +31,23 @@ case "$OS" in
     pkg_install() { brew install "$@"; }
     ;;
   Linux)
-    BRANCH="${DOTFILES_BRANCH:-arch}"
-    has pacman || { echo "Linux: only Arch (pacman) is supported" >&2; exit 1; }
-    pkg_install() { sudo pacman -S --needed --noconfirm "$@"; }
+    if has pacman; then
+      BRANCH="${DOTFILES_BRANCH:-arch}"
+      pkg_install() { sudo pacman -S --needed --noconfirm "$@"; }
+    elif has rpm-ostree || has bootc; then
+      # bootc image (e.g. fawos): packages are baked into the Containerfile,
+      # dnf5 at runtime doesn't persist across reboots.
+      BRANCH="${DOTFILES_BRANCH:-fawos}"
+      NO_INSTALL=1
+      pkg_install() { :; }
+    else
+      echo "Linux: Arch (pacman) or fawos (bootc) only" >&2; exit 1
+    fi
     ;;
   *) echo "Unsupported OS: $OS" >&2; exit 1 ;;
 esac
+
+[ "$NO_INSTALL" = 1 ] && pkg_install() { :; }
 
 # 2. Tools (command:package), only the missing ones: some live outside the package manager
 log "Checking tools..."
@@ -43,9 +59,13 @@ done
 # lazydocker is AUR-only on Arch
 [ "$OS" = Darwin ] && ! has lazydocker && missing="$missing lazydocker"
 if [ -n "$missing" ]; then
-  log "Installing:$missing"
-  # shellcheck disable=SC2086 # word splitting intended
-  pkg_install $missing
+  if [ "$NO_INSTALL" = 1 ]; then
+    log "Missing (not installing, --no-install):$missing"
+  else
+    log "Installing:$missing"
+    # shellcheck disable=SC2086 # word splitting intended
+    pkg_install $missing
+  fi
 fi
 
 # 3. Bare repo
