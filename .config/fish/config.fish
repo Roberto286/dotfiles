@@ -36,3 +36,4 @@ end
 
 # opencode
 fish_add_path /home/roberto/.opencode/bin
+mise activate fish | source

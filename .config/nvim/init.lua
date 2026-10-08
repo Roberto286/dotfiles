@@ -67,6 +67,16 @@ vim.api.nvim_create_autocmd({ "FocusLost", "InsertLeave", "TextChanged" }, {
 	command = "silent! update",
 })
 
+-- Edge templates (.edge): reuse legacy HTML syntax highlighting, same as .html files
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "edge",
+	callback = function(args)
+		vim.schedule(function()
+			vim.bo[args.buf].syntax = "html"
+		end)
+	end,
+})
+
 -- Diagnostics
 vim.diagnostic.config({
 	severity_sort = true,
@@ -355,6 +365,24 @@ local plugins = {
 			lsp.enable("jsonls")
 			lsp.enable("wc_language_server")
 			lsp.enable("biome")
+			lsp.config("emmet_language_server", {
+				filetypes = {
+					"astro",
+					"css",
+					"eruby",
+					"html",
+					"htmlangular",
+					"htmldjango",
+					"javascriptreact",
+					"less",
+					"sass",
+					"scss",
+					"svelte",
+					"typescriptreact",
+					"vue",
+					"edge",
+				},
+			})
 			lsp.enable("emmet_language_server")
 			lsp.enable("rumdl")
 			lsp.enable("eslint")
@@ -634,6 +662,9 @@ local plugins = {
 			require("cmp").event:on("confirm_done", cmp_autopairs.on_confirm_done())
 		end,
 	},
+
+	-- Edge template (.edge) filetype/indent support
+	{ "markgarrigan/edge.nvim", ft = "edge" },
 }
 
 require("lazy").setup(plugins, {
