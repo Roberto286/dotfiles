@@ -1,0 +1,19 @@
+setupVersion: 2
+dev:
+  autoqaConsent: granted
+memory:
+  backend: mnemopi
+autolearn:
+  enabled: true
+mnemopi:
+  proactiveLinking: true
+advisor:
+  enabled: true
+edit:
+  mode: hashline
+lsp:
+  formatOnWrite: true
+defaultThinkingLevel: auto
+hideThinkingBlock: true
+browser:
+  headless: true

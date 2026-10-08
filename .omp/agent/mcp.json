@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json",
+  "mcpServers": {
+    "linear": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp"
+    },
+    "gitlab": {
+      "type": "http",
+      "url": "https://gitlab.com/api/v4/mcp"
+    },
+    "postman": {
+      "type": "http",
+      "url": "https://mcp.postman.com/minimal"
+    },
+    "tokensave": {
+      "command": "/Users/roberto/.cargo/bin/tokensave",
+      "args": [
+        "serve"
+      ]
+    }
+  }
+}
