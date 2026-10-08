@@ -26,18 +26,6 @@ function update_system
     end &
 
     begin
-        echo "==> uv self update"
-        uv self update
-        echo "==> uv tool upgrade --all"
-        uv tool upgrade --all
-    end &
-
-    begin
-        echo "==> npm update -g"
-        npm update -g
-    end &
-
-    begin
         echo "==> gem update"
         gem update
     end &
@@ -55,6 +43,11 @@ function update_system
     begin
         echo "==> fisher update"
         fisher update
+    end &
+
+    begin
+        echo "==> mise upgrade"
+        mise upgrade
     end &
 
     begin
