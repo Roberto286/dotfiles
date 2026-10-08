@@ -1,0 +1,30 @@
+[tools]
+bun = "latest"
+go = "latest"
+node = "lts"
+python = "3.13"
+rust = "stable"
+uv = "latest"
+
+# npm globals
+"npm:@alibaba-group/open-code-review" = "latest"
+"npm:@angular/cli" = "latest"
+"npm:@biomejs/biome" = "latest"
+"npm:@bitwarden/cli" = "latest"
+"npm:@earendil-works/pi-coding-agent" = "latest"
+"npm:@fernado03/oh-my-pi-supreme-token-saver" = "latest"
+"npm:@nestjs/cli" = "latest"
+"npm:@olrtg/emmet-language-server" = "latest"
+"npm:@vtsls/language-server" = "latest"
+"npm:@zereight/mcp-gitlab" = "latest"
+"npm:pm2" = "latest"
+"npm:prettier" = "latest"
+"npm:typescript" = "latest"
+"npm:typescript-language-server" = "latest"
+"npm:vscode-langservers-extracted" = "latest"
+
+# python tools (installed via uv)
+"pipx:basedpyright" = "latest"
+"pipx:headroom-ai" = { version = "latest", extras = "all" }
+"pipx:ruff" = "latest"
+"pipx:trafilatura" = "latest"
