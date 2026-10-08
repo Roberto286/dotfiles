@@ -1,171 +1,91 @@
 #!/usr/bin/env sh
+# Dotfiles bootstrap (bare repo) for macOS (branch "mac") and Arch (branch "arch").
+# Usage: sh -c "$(curl -fsSL https://raw.githubusercontent.com/Roberto286/dotfiles/master/bootstrap.sh)"
+# Override the branch with DOTFILES_BRANCH=<name>. Safe to re-run.
 set -eu
 
-DOTFILES_REPO="git@github.com:Roberto286/dotfiles.git"
+REPO_HTTPS="https://github.com/Roberto286/dotfiles.git" # clone without SSH keys
+REPO_SSH="git@github.com:Roberto286/dotfiles.git"      # push once keys exist
 DOTFILES_DIR="$HOME/.dotfiles"
+BACKUP_DIR="$HOME/.dotfiles-backup"
 
-# -----------------------------
-# Flags
-# -----------------------------
-DRY_RUN=0
-VERBOSE=0
-
-while getopts "nv" opt; do
-  case "$opt" in
-    n) DRY_RUN=1 ;;
-    v) VERBOSE=1 ;;
-    *) echo "Usage: $0 [-n] [-v]"; echo "  -n  Dry run (no changes)"; echo "  -v  Verbose output"; exit 1 ;;
-  esac
-done
-
-# -----------------------------
-# Helpers
-# -----------------------------
-log()     { printf ":: %s\n" "$*"; }
-verbose() { [ "$VERBOSE" -eq 1 ] && printf "   %s\n" "$*"; }
-
-command_exists() { command -v "$1" >/dev/null 2>&1; }
-
-run() {
-  if [ "$DRY_RUN" -eq 1 ]; then
-    printf "[dry-run] %s\n" "$*"
-  else
-    "$@"
-  fi
-}
-
-install_pkg() {
-  if command_exists brew; then run brew install "$1"
-  elif command_exists apt-get; then run sudo apt-get install -y "$1"
-  elif command_exists pacman; then run sudo pacman -S --noconfirm "$1"
-  else echo "No supported package manager"; exit 1
-  fi
-}
-
-ensure_cmd() {
-  _cmd="$1"
-  _pkg="${2:-$1}"
-  if command_exists "$_cmd"; then
-    verbose "$_cmd already installed, skipping"
-  else
-    log "Installing $_pkg..."
-    install_pkg "$_pkg"
-  fi
-}
-
-# -----------------------------
-# 1. Base dependencies
-# -----------------------------
-log "Checking base dependencies..."
-for cmd in git curl; do
-  ensure_cmd "$cmd"
-done
-
-# -----------------------------
-# 2. Clone bare repo
-# -----------------------------
-log "Setting up dotfiles..."
-if [ -d "$DOTFILES_DIR" ]; then
-  verbose "Dotfiles repo already cloned, skipping"
-else
-  log "Cloning dotfiles bare repo..."
-  run git clone --bare "$DOTFILES_REPO" "$DOTFILES_DIR"
-fi
-
+log() { printf ':: %s\n' "$*"; }
+has() { command -v "$1" >/dev/null 2>&1; }
 dotfiles() { git --git-dir="$DOTFILES_DIR" --work-tree="$HOME" "$@"; }
 
-# -----------------------------
-# 3. Checkout dotfiles
-# -----------------------------
-log "Checking out dotfiles..."
-if [ "$DRY_RUN" -eq 1 ]; then
-  printf "[dry-run] dotfiles checkout\n"
-elif ! dotfiles checkout 2>/dev/null; then
-  log "Backing up conflicting files..."
-  backup_dir="$HOME/.dotfiles-backup"
-  mkdir -p "$backup_dir"
-  dotfiles checkout 2>&1 | grep -E "^\s+" | awk '{print $1}' | while read -r f; do
-    target_dir="$(dirname "$backup_dir/$f")"
-    mkdir -p "$target_dir"
-    mv "$HOME/$f" "$backup_dir/$f"
-    verbose "Backed up $f -> $backup_dir/$f"
+# 1. Package manager
+OS="$(uname -s)"
+case "$OS" in
+  Darwin)
+    BRANCH="${DOTFILES_BRANCH:-mac}"
+    if ! has brew; then
+      log "Installing Homebrew..."
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    fi
+    [ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+    pkg_install() { brew install "$@"; }
+    ;;
+  Linux)
+    BRANCH="${DOTFILES_BRANCH:-arch}"
+    has pacman || { echo "Linux: only Arch (pacman) is supported" >&2; exit 1; }
+    pkg_install() { sudo pacman -S --needed --noconfirm "$@"; }
+    ;;
+  *) echo "Unsupported OS: $OS" >&2; exit 1 ;;
+esac
+
+# 2. Tools (command:package), only the missing ones: some live outside the package manager
+log "Checking tools..."
+missing=""
+for pair in git:git curl:curl fish:fish nvim:neovim rg:ripgrep fd:fd fzf:fzf \
+            lazygit:lazygit tmux:tmux mise:mise; do
+  has "${pair%%:*}" || missing="$missing ${pair#*:}"
+done
+# lazydocker is AUR-only on Arch
+[ "$OS" = Darwin ] && ! has lazydocker && missing="$missing lazydocker"
+if [ -n "$missing" ]; then
+  log "Installing:$missing"
+  # shellcheck disable=SC2086 # word splitting intended
+  pkg_install $missing
+fi
+
+# 3. Bare repo
+if [ ! -d "$DOTFILES_DIR" ]; then
+  log "Cloning dotfiles..."
+  git clone --bare "$REPO_HTTPS" "$DOTFILES_DIR"
+  dotfiles remote set-url origin "$REPO_SSH"
+  # --bare skips the fetch refspec: without it `dotfiles fetch` never updates origin/*
+  dotfiles config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+fi
+
+# 4. First checkout: move pre-existing files out of the way
+if [ -z "$(dotfiles ls-files)" ]; then
+  log "Checking out $BRANCH..."
+  dotfiles ls-tree -r --name-only "$BRANCH" | while IFS= read -r f; do
+    [ -e "$HOME/$f" ] || continue
+    mkdir -p "$BACKUP_DIR/$(dirname "$f")"
+    mv "$HOME/$f" "$BACKUP_DIR/$f"
+    log "Backed up ~/$f"
   done
-  dotfiles checkout
-  log "Conflicting files moved to $backup_dir"
+  dotfiles checkout "$BRANCH"
 fi
 
-dotfiles config --local status.showUntrackedFiles no 2>/dev/null || true
+# 5. Plugins and runtimes
+log "Installing fish plugins..."
+fish -c 'type -q fisher || curl -fsSL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source; fisher update'
 
-# -----------------------------
-# 4. Fish shell + fisher
-# -----------------------------
-log "Setting up fish shell..."
-ensure_cmd fish
-
-if [ "$DRY_RUN" -eq 1 ]; then
-  printf "[dry-run] install fisher\n"
-elif ! fish -c "type -q fisher" 2>/dev/null; then
-  log "Installing fisher..."
-  fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"
-else
-  verbose "fisher already installed, skipping"
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+  log "Installing tpm..."
+  git clone --depth 1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
 
-# -----------------------------
-# 5. Install fish plugins
-# -----------------------------
-log "Updating fish plugins..."
-if [ -f "$HOME/.config/fish/fish_plugins" ]; then
-  if [ "$DRY_RUN" -eq 1 ]; then
-    printf "[dry-run] fisher update\n"
-  else
-    fish -c "fisher update"
-  fi
-else
-  verbose "No fish_plugins file found, skipping"
+log "Installing mise tools..."
+mise install
+
+FISH="$(command -v fish)"
+if [ "${SHELL:-}" != "$FISH" ]; then
+  log "Setting fish as default shell..."
+  grep -qx "$FISH" /etc/shells || echo "$FISH" | sudo tee -a /etc/shells >/dev/null
+  chsh -s "$FISH"
 fi
 
-# -----------------------------
-# 6. Optional tools
-# -----------------------------
-log "Checking optional tools..."
-ensure_cmd nvim neovim
-ensure_cmd rg ripgrep
-if command_exists fd; then
-  verbose "fd already installed, skipping"
-elif command_exists fdfind; then
-  verbose "fd (as fdfind) already installed, skipping"
-else
-  log "Installing fd..."
-  install_pkg fd
-fi
-ensure_cmd lazygit
-
-# -----------------------------
-# 7. Dev tools (from config)
-# -----------------------------
-log "Checking dev tools..."
-
-# fzf (required by fzf-lua nvim plugin)
-ensure_cmd fzf
-
-# lazydocker (aliased as 'ld' in config.fish)
-ensure_cmd lazydocker
-
-# pnpm (PATH configured in config.fish)
-if command_exists pnpm; then
-  verbose "pnpm already installed, skipping"
-elif [ "$DRY_RUN" -eq 1 ]; then
-  printf "[dry-run] install pnpm via corepack or standalone script\n"
-else
-  log "Installing pnpm..."
-  if command_exists corepack; then
-    corepack enable
-    corepack prepare pnpm@latest --activate
-  else
-    curl -fsSL https://get.pnpm.io/install.sh | sh -
-  fi
-fi
-
-echo ""
-echo "Bootstrap done. Run: exec fish"
+printf '\nBootstrap done. Run: exec fish (tmux plugins: prefix + I)\n'

@@ -24,32 +24,16 @@ Se un file è versionato qui, **non va ricreato manualmente** su una nuova macch
 
 ## How to install (nuova macchina)
 
-### 1. Prerequisiti
-
-Assicurati di avere installato almeno:
-
-- `git`
-- `fish`
-
-Opzionali ma consigliati (dipendono dai dotfiles presenti):
-- `neovim`
-- `ripgrep`
-- `fd`
-- `lazygit`
-- altri tool referenziati negli alias o config
-
-> Nota: gli alias e le config funzionano **solo se i binari esistono**.
-
----
-
-### 2. Clone del bare repository
-
 ```bash
-git clone --bare <REPO_URL> ~/.dotfiles
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/Roberto286/dotfiles/master/bootstrap.sh)"
 ```
 
-### 3. Setup automatizzato
+Lo script (idempotente, rilanciabile):
 
-```bash
-curl -sL https://raw.githubusercontent.com/Roberto286/dotfiles/refs/heads/master/bootstrap.sh | bash
-```
+- installa Homebrew (macOS) e i tool mancanti (`git`, `fish`, `neovim`, `ripgrep`, `fd`, `fzf`, `lazygit`, `tmux`, `mise`, `lazydocker` solo su macOS)
+- clona il bare repo in `~/.dotfiles` e fa checkout del branch `mac` (macOS) o `arch` (Linux); override con `DOTFILES_BRANCH=<nome>`
+- sposta in `~/.dotfiles-backup` i file già presenti che andrebbero in conflitto
+- installa plugin fish (fisher), tpm e i tool di mise (`~/.config/mise/config.toml`: node, bun, python, go, rust)
+- imposta fish come shell di default
+
+> Usa `sh -c "$(curl …)"`, non `curl … | sh`: con la pipe `fisher` legge lo stdin e si mangia il resto dello script.
