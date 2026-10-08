@@ -1,24 +1,75 @@
 function update_system
-    echo "==> brew update & upgrade"
-    brew update && brew upgrade
+    # Chiedi la password sudo UNA volta.
+    sudo -v
+    set -x HOMEBREW_NO_ENV_HINTS 1
 
-    echo "==> brew cleanup"
-    brew cleanup
+    # Rinfresca il ticket sudo ogni 50s finche' la funzione gira,
+    # cosi' download lunghi (cask grossi) non lo fanno scadere.
+    fish -c 'while sudo -n true 2>/dev/null; sleep 50; end' &
+    set -l sudo_keepalive $last_pid
 
-    echo "==> npm update -g"
-    npm update -g
+    # Gruppi indipendenti in parallelo. Ogni catena interna resta sequenziale.
+    # Output mischiato: e' il prezzo del parallelismo.
 
-    echo "==> rustup self update"
-    gtimeout 60 rustup self update
+    begin
+        echo "==> brew update & upgrade"
+        brew update && brew upgrade </dev/null
+        echo "==> brew cleanup"
+        brew cleanup
+    end &
 
-    echo "==> rustup update"
-    gtimeout 120 rustup update --no-self-update
+    begin
+        echo "==> rustup self update"
+        gtimeout 60 rustup self update
+        echo "==> rustup update"
+        gtimeout 120 rustup update --no-self-update
+    end &
 
-    echo "==> fisher update"
-    fisher update
+    begin
+        echo "==> uv self update"
+        uv self update
+        echo "==> uv tool upgrade --all"
+        uv tool upgrade --all
+    end &
 
-    echo "==> mas upgrade"
-    mas upgrade
+    begin
+        echo "==> npm update -g"
+        npm update -g
+    end &
+
+    begin
+        echo "==> gem update"
+        gem update
+    end &
+
+    begin
+        echo "==> tldr update"
+        tldr --update
+    end &
+
+    begin
+        echo "==> gh extension upgrade --all"
+        gh extension upgrade --all
+    end &
+
+    begin
+        echo "==> fisher update"
+        fisher update
+    end &
+
+    begin
+        echo "==> mas upgrade"
+        mas upgrade
+    end &
+
+    wait
+
+    # sudo gia' in cache: nessun prompt. --agree-to-license evita la conferma.
+    echo "==> softwareupdate (macOS)"
+    sudo softwareupdate --install --all --agree-to-license
+
+    # Ferma il keep-alive del ticket sudo.
+    kill $sudo_keepalive 2>/dev/null
 
     echo "==> done"
 end
