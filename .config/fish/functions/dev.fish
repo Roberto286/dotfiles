@@ -1,5 +1,6 @@
 function dev
-    set session "dev"
+    set repo_root (git rev-parse --show-toplevel 2>/dev/null; or pwd)
+    set session (basename $repo_root | string replace -a ':' '_' | string replace -a '.' '_')
 
     # Don't create a duplicate session
     if tmux has-session -t $session 2>/dev/null
@@ -8,7 +9,7 @@ function dev
     end
 
     # Create session and first window: nvim
-    tmux new-session -d -s $session -n editor -x 220 -y 50
+    tmux new-session -d -s $session -n editor -x 220 -y 50 -c $repo_root
     tmux send-keys -t $session:editor "nvim" Enter
 
     # lazygit
