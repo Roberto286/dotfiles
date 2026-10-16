@@ -11,8 +11,6 @@ set -g fish_greeting ""
 # Alias
 alias lg lazygit
 alias ld lazydocker
-alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
-alias lg-dotfiles='lazygit --git-dir=$HOME/.dotfiles --work-tree=$HOME'
 # Alias end
 
 # Generated for envman. Do not edit.
