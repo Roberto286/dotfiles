@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+functions_dir="$HOME/.config/fish/functions"
+fisher_file="$functions_dir/fisher.fish"
+
+if [[ ! -f "$fisher_file" ]]; then
+    mkdir -p "$functions_dir"
+
+    curl --fail --silent --show-error --location \
+        https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish \
+        --output "$fisher_file"
+fi
+
+fish -c 'fisher update'
