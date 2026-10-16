@@ -2,6 +2,11 @@
 set -euo pipefail
 
 fisher_file="$HOME/.config/fish/functions/fisher.fish"
+
+if [[ -f "$fisher_file" ]]; then
+  exit 0
+fi
+
 mkdir -p "$(dirname "$fisher_file")"
 
 curl --fail --silent --show-error --location \
