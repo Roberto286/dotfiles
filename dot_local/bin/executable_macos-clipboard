@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# macOS-style clipboard shortcuts for Niri; keep Ctrl+C available to terminal apps.
+set -euo pipefail
+
+case "${1:-}" in
+    copy) key=c ;;
+    paste) key=v ;;
+    cut) key=x ;;
+    *) printf 'Usage: macos-clipboard {copy|paste|cut}\n' >&2; exit 2 ;;
+esac
+
+app_id=$(niri msg -j focused-window | jq -er '.app_id // empty')
+keys=(-M ctrl -k "$key" -m ctrl)
+if [[ "$app_id" == com.mitchellh.ghostty ]]; then
+    if [[ "$key" == x ]]; then
+        notify-send 'Cut unavailable' 'Terminal output is read-only. Use shell editing shortcuts for command lines.'
+        exit 1
+    fi
+    keys=(-M ctrl -M shift -k "$key" -m shift -m ctrl)
+fi
+
+exec "$HOME/.local/bin/wtype" "${keys[@]}"
