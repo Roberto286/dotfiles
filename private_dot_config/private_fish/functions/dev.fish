@@ -22,6 +22,7 @@ function dev
 
     # plain shell — land here on attach
     tmux new-window -t $session -n shell
+		tmux send-keys -t $session:shell "fish" Enter
 
     # Focus editor on attach
     tmux select-window -t $session:editor
