@@ -1,3 +1,2 @@
 shell-integration = fish
 command =  fish --login --interactive
-GTK_IM_MODULE=simple
