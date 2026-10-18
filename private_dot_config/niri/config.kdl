@@ -1,3 +1,9 @@
+include "dms/colors.kdl"
+include "dms/layout.kdl"
+include "dms/cursor.kdl"
+include "dms/outputs.kdl"
+include "dms/alttab.kdl"
+
 // This config is in the KDL format: https://kdl.dev
 // "/-" comments out the following node.
 // Check the wiki for a full description of the configuration:
@@ -7,6 +13,7 @@
 // Find the full list of options on the wiki:
 // https://niri-wm.github.io/niri/Configuration:-Input
 input {
+	disable-power-key-handling
     keyboard {
         xkb {
             // You can set rules, model, layout, variant and options.
@@ -270,6 +277,11 @@ layout {
 
 spawn-at-startup "dms" "run"
 
+switch-events {
+    // Lock even when docking prevents suspension on lid close.
+    lid-close { spawn "dms" "ipc" "lock" "lock"; }
+}
+
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 
@@ -363,35 +375,31 @@ binds {
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
     Mod+T hotkey-overlay-title="Open a Terminal: ghostty" { spawn "ghostty"; }
-    Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
-    Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
+    Mod+space hotkey-overlay-title="Run an Application: DMS" { spawn "dms" "ipc" "launcher" "toggle"; }
+    Super+Alt+L hotkey-overlay-title="Lock the Screen: DMS" { spawn "dms" "ipc" "lock" "lock"; }
+    XF86PowerOff repeat=false allow-inhibiting=false hotkey-overlay-title="Power Menu: DMS" { spawn "dms" "ipc" "powermenu" "toggle"; }
 
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
     // For example, this is a standard bind to toggle the screen reader (orca).
     Super+Alt+S allow-when-locked=true hotkey-overlay-title=null { spawn-sh "pkill orca || exec orca"; }
 
-    // Example volume keys mappings for PipeWire & WirePlumber.
-    // The allow-when-locked=true property makes them work even when the session is locked.
-    // Using spawn-sh allows to pass multiple arguments together with the command.
-    // "-l 1.0" limits the volume to 100%.
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
-    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-    XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+    // DMS audio controls, in steps of 10 percentage points.
+    // Keep these controls available while the session is locked.
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "dms" "ipc" "audio" "increment" "10"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "dms" "ipc" "audio" "decrement" "10"; }
+    XF86AudioMute        allow-when-locked=true { spawn "dms" "ipc" "audio" "mute"; }
+    XF86AudioMicMute     allow-when-locked=true { spawn "dms" "ipc" "audio" "micmute"; }
 
-    // Example media keys mapping using playerctl.
-    // This will work with any MPRIS-enabled media player.
-    XF86AudioPlay        allow-when-locked=true { spawn-sh "playerctl play-pause"; }
-    XF86AudioStop        allow-when-locked=true { spawn-sh "playerctl stop"; }
-    XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
-    XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
+    // Control the active MPRIS player selected by DMS.
+    XF86AudioPlay        allow-when-locked=true { spawn "dms" "ipc" "mpris" "playPause"; }
+    XF86AudioStop        allow-when-locked=true { spawn "dms" "ipc" "mpris" "stop"; }
+    XF86AudioPrev        allow-when-locked=true { spawn "dms" "ipc" "mpris" "previous"; }
+    XF86AudioNext        allow-when-locked=true { spawn "dms" "ipc" "mpris" "next"; }
 
-    // Example brightness key mappings for brightnessctl.
-    // You can use regular spawn with multiple arguments too (to avoid going through "sh"),
-    // but you need to manually put each argument in separate "" quotes.
-    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+    // DMS brightness controls, in steps of 10 percentage points.
+    XF86MonBrightnessUp allow-when-locked=true { spawn "dms" "ipc" "brightness" "increment" "10"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "dms" "ipc" "brightness" "decrement" "10"; }
 
     // Open/close the Overview: a zoomed-out view of workspaces and windows.
     // You can also move the mouse into the top-left hot corner,
@@ -503,8 +511,8 @@ binds {
     // These binds are also affected by touchpad's natural-scroll, so these
     // example binds are "inverted", since we have natural-scroll enabled for
     // touchpads by default.
-    // Mod+TouchpadScrollDown { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.02+"; }
-    // Mod+TouchpadScrollUp   { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.02-"; }
+    // Mod+TouchpadScrollDown { spawn "dms" "ipc" "audio" "increment" "2"; }
+    // Mod+TouchpadScrollUp   { spawn "dms" "ipc" "audio" "decrement" "2"; }
 
     // You can refer to workspaces by index. However, keep in mind that
     // niri is a dynamic workspace system, so these commands are kind of
