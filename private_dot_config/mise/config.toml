@@ -17,3 +17,4 @@ uv = "latest"
 
 cargo-binstall = "latest"
 "pipx:ruff" = "latest"
+"github:can1357/oh-my-pi" = "latest"
