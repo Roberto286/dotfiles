@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# macOS-style clipboard shortcuts for Niri; keep Ctrl+C available to terminal apps.
-# Bound to Alt+C/V/X; Super and AltGr are not remapped. Requires ~/.local/bin/wtype.
-# Ghostty uses Ctrl+Shift+C/V; cutting read-only terminal output reports an error.
+# Selected macOS-style shortcuts for Niri; keep Ctrl+C available to terminal apps.
+# Bound to Alt+C/V/X/A/R; Super and AltGr are unchanged. Requires ~/.local/bin/wtype.
+# Ghostty uses Ctrl+Shift+C/V/A. Reload applies only to Chromium; other apps receive Alt+R.
+# Cutting read-only terminal output reports an error.
 set -euo pipefail
 
 case "${1:-}" in

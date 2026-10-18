@@ -381,7 +381,7 @@ binds {
     Super+Alt+L hotkey-overlay-title="Lock the Screen: DMS" { spawn "dms" "ipc" "lock" "lock"; }
     XF86PowerOff repeat=false allow-inhibiting=false hotkey-overlay-title="Power Menu: DMS" { spawn "dms" "ipc" "powermenu" "toggle"; }
 
-    // Alt handles clipboard actions; keep Super and Ctrl shortcuts unchanged.
+    // Selected macOS-style Alt shortcuts; keep Super and Ctrl shortcuts unchanged.
     Alt+C repeat=false hotkey-overlay-title="Copy" { spawn-sh "exec \"$HOME/.local/bin/macos-clipboard\" copy"; }
     Alt+V repeat=false hotkey-overlay-title="Paste" { spawn-sh "exec \"$HOME/.local/bin/macos-clipboard\" paste"; }
     Alt+X repeat=false hotkey-overlay-title="Cut" { spawn-sh "exec \"$HOME/.local/bin/macos-clipboard\" cut"; }
