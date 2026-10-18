@@ -385,6 +385,8 @@ binds {
     Alt+C repeat=false hotkey-overlay-title="Copy" { spawn-sh "exec \"$HOME/.local/bin/macos-clipboard\" copy"; }
     Alt+V repeat=false hotkey-overlay-title="Paste" { spawn-sh "exec \"$HOME/.local/bin/macos-clipboard\" paste"; }
     Alt+X repeat=false hotkey-overlay-title="Cut" { spawn-sh "exec \"$HOME/.local/bin/macos-clipboard\" cut"; }
+    Alt+A repeat=false hotkey-overlay-title="Select all" { spawn-sh "exec \"$HOME/.local/bin/macos-clipboard\" select-all"; }
+    Alt+R repeat=false hotkey-overlay-title="Reload Chromium page" { spawn-sh "exec \"$HOME/.local/bin/macos-clipboard\" reload"; }
 
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.

@@ -8,11 +8,19 @@ case "${1:-}" in
     copy) key=c ;;
     paste) key=v ;;
     cut) key=x ;;
-    *) printf 'Usage: macos-clipboard {copy|paste|cut}\n' >&2; exit 2 ;;
+    select-all) key=a ;;
+    reload) key=r ;;
+    *) printf 'Usage: macos-clipboard {copy|paste|cut|select-all|reload}\n' >&2; exit 2 ;;
 esac
 
 app_id=$(niri msg -j focused-window | jq -er '.app_id // empty')
 keys=(-M ctrl -k "$key" -m ctrl)
+if [[ "$key" == r ]]; then
+    case "$app_id" in
+        chromium|chromium-browser|org.chromium.Chromium|chrome-*) ;;
+        *) exec "$HOME/.local/bin/wtype" -M alt -k r -m alt ;;
+    esac
+fi
 if [[ "$app_id" == com.mitchellh.ghostty ]]; then
     if [[ "$key" == x ]]; then
         notify-send 'Cut unavailable' 'Terminal output is read-only. Use shell editing shortcuts for command lines.'
