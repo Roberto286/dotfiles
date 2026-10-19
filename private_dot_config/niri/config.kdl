@@ -40,7 +40,6 @@ input {
     // All commented-out settings here are examples, not defaults.
     touchpad {
         // off
-        tap
         // dwt
         // dwtp
         // drag false
@@ -417,23 +416,23 @@ binds {
 
     Mod+Q repeat=false { close-window; }
 
-    Mod+Left  { focus-column-left; }
-    Mod+Down  { focus-window-down; }
-    Mod+Up    { focus-window-up; }
-    Mod+Right { focus-column-right; }
-    Mod+H     { focus-column-left; }
-    Mod+J     { focus-window-down; }
-    Mod+K     { focus-window-up; }
-    Mod+L     { focus-column-right; }
+    Ctrl+Left  { focus-column-left; }
+    Ctrl+Down  { focus-window-down; }
+    Ctrl+Up    { focus-window-up; }
+    Ctrl+Right { focus-column-right; }
+    Ctrl+H     { focus-column-left; }
+    Ctrl+J     { focus-window-down; }
+    Ctrl+K     { focus-window-up; }
+    Ctrl+L     { focus-column-right; }
 
-    Mod+Ctrl+Left  { move-column-left; }
-    Mod+Ctrl+Down  { move-window-down; }
-    Mod+Ctrl+Up    { move-window-up; }
-    Mod+Ctrl+Right { move-column-right; }
-    Mod+Ctrl+H     { move-column-left; }
-    Mod+Ctrl+J     { move-window-down; }
-    Mod+Ctrl+K     { move-window-up; }
-    Mod+Ctrl+L     { move-column-right; }
+    Ctrl+Win+Left  { move-column-left; }
+    Ctrl+Win+Down  { move-window-down; }
+    Ctrl+Win+Up    { move-window-up; }
+    Ctrl+Win+Right { move-column-right; }
+    Ctrl+Win+H     { move-column-left; }
+    Ctrl+Win+J     { move-window-down; }
+    Ctrl+Win+K     { move-window-up; }
+    Ctrl+Win+L     { move-column-right; }
 
     // Alternative commands that move across workspaces when reaching
     // the first or last window in a column.
