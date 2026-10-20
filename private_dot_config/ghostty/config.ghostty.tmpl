@@ -1,2 +1,6 @@
 shell-integration = fish
-command =  fish --login --interactive
+{{ if eq .chezmoi.os "darwin" -}}
+command = /opt/homebrew/bin/fish
+{{ else if eq .chezmoi.os "linux" -}}
+command = /usr/bin/fish
+{{ end -}}
