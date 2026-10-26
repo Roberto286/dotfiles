@@ -352,6 +352,7 @@ local plugins = {
 			lsp.config("*", {
 				capabilities = require("cmp_nvim_lsp").default_capabilities(),
 			})
+			lsp.enable("gopls")
 			lsp.enable("lua_ls")
 			lsp.config("basedpyright", {
 				settings = { python = { analysis = { diagnosticMode = "openFilesOnly" } } },
@@ -613,6 +614,7 @@ local plugins = {
 				javascript = { "biome", "prettier", stop_after_first = true },
 				typescript = { "biome", "prettier", stop_after_first = true },
 				lua = { "stylua" },
+				go = {"gofmt"}
 			},
 			formatters = {
 				biome = {
