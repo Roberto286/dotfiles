@@ -25,3 +25,4 @@ if test -d "$HOME/.local/bin"
 end
 
 mise activate fish | source
+zoxide init fish | source
