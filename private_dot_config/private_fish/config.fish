@@ -11,7 +11,7 @@ set -g fish_greeting ""
 # Alias
 alias lg lazygit
 alias ld lazydocker
-alias omp-personal "omp --profile personal"
+alias "omp-personal" "omp --profile personal"
 # Alias end
 
 # Generated for envman. Do not edit.
