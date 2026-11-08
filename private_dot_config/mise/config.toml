@@ -34,5 +34,4 @@ opencode = "latest"
 minimum_release_age = "7d"
 
 [settings.npm]
-# aube aborts non-interactively on this package; use plain npm.
 package_manager = "npm"
