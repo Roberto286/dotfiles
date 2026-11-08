@@ -14,7 +14,7 @@ uv = "latest"
 "npm:vscode-langservers-extracted" = "latest"
 "npm:@bitwarden/cli" = "latest"
 "pipx:basedpyright" = "latest"
-
+"pipx:headroom-ai" = "latest"
 cargo-binstall = "latest"
 "pipx:ruff" = "latest"
 "github:can1357/oh-my-pi" = "latest"
