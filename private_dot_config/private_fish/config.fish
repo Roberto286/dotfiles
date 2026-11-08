@@ -4,6 +4,9 @@ end
 
 set -g fish_greeting ""
 
+set -gx EDITOR nvim
+set -gx VISUAL nvim
+
 # Alias
 alias lg lazygit
 alias ld lazydocker
