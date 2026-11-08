@@ -1,7 +1,3 @@
-if status is-interactive
-    # Commands to run in interactive sessions can go here
-end
-
 if not type -q fisher
     echo "⚠️ fisher not installed. Run bootstrap script."
 end
@@ -14,8 +10,6 @@ alias ld lazydocker
 alias "omp-personal" "omp --profile personal"
 # Alias end
 
-# Generated for envman. Do not edit.
-test -s ~/.config/envman/load.fish; and source ~/.config/envman/load.fish
 
 # Plugin config
 set -g fish_theme catppuccin-mocha

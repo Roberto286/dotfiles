@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Re-runs whenever .tmux.conf changes: {{ include "dot_tmux.conf" | sha256sum }}
+set -euo pipefail
+installer="$HOME/.tmux/plugins/tpm/bin/install_plugins"
+[[ -x "$installer" ]] || exit 0
+"$installer" >/dev/null

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Selected macOS-style shortcuts for Niri; keep Ctrl+C available to terminal apps.
-# Bound to Alt+C/V/X/A/R; Super and AltGr are unchanged. Requires ~/.local/bin/wtype.
+# Bound to Alt+C/V/X/A/R; Super and AltGr are unchanged. Requires wtype.
 # Ghostty uses Ctrl+Shift+C/V/A. Reload applies only to Chromium; other apps receive Alt+R.
 # Cutting read-only terminal output reports an error.
 set -euo pipefail
@@ -19,7 +19,7 @@ keys=(-M ctrl -k "$key" -m ctrl)
 if [[ "$key" == r ]]; then
     case "$app_id" in
         chromium|chromium-browser|org.chromium.Chromium|chrome-*) ;;
-        *) exec "$HOME/.local/bin/wtype" -M alt -k r -m alt ;;
+        *) exec wtype -M alt -k r -m alt ;;
     esac
 fi
 if [[ "$app_id" == com.mitchellh.ghostty ]]; then
@@ -30,4 +30,4 @@ if [[ "$app_id" == com.mitchellh.ghostty ]]; then
     keys=(-M ctrl -M shift -k "$key" -m shift -m ctrl)
 fi
 
-exec "$HOME/.local/bin/wtype" "${keys[@]}"
+exec wtype "${keys[@]}"

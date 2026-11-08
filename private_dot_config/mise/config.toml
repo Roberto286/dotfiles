@@ -1,4 +1,9 @@
 [tools]
+lua-language-server = "latest"
+stylua = "latest"
+rumdl = "latest"
+tree-sitter = "latest"
+"npm:@wc-toolkit/language-server" = "latest"
 bun = "latest"
 go = "latest"
 node = "lts"
@@ -14,7 +19,7 @@ uv = "latest"
 "npm:vscode-langservers-extracted" = "latest"
 "npm:@bitwarden/cli" = "latest"
 "pipx:basedpyright" = "latest"
-"pypi:headroom-ai" = { version = "latest", extras = ["all"] }
+"pipx:headroom-ai" = { version = "latest", extras = "all", uvx_args = "--python 3.13" }
 cargo-binstall = "latest"
 "pipx:ruff" = "latest"
 "github:can1357/oh-my-pi" = "latest"
@@ -23,3 +28,11 @@ lazydocker = "latest"
 "go:golang.org/x/tools/gopls" = "0.24.0"
 opencode = "latest"
 "cargo:zoxide" = "latest"
+
+[settings]
+# Supply-chain cooldown: `latest` resolves only to releases at least 7 days old (npm/pipx deps included).
+minimum_release_age = "7d"
+
+[settings.npm]
+# aube aborts non-interactively on this package; use plain npm.
+package_manager = "npm"
