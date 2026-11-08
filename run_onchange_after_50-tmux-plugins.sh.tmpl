@@ -3,4 +3,9 @@
 set -euo pipefail
 installer="$HOME/.tmux/plugins/tpm/bin/install_plugins"
 [[ -x "$installer" ]] || exit 0
-"$installer" >/dev/null
+# tpm needs a tmux server and its plugin path in the environment.
+tmux new-session -d -s tpm-bootstrap
+tmux set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/.tmux/plugins/"
+"$installer" >/dev/null || rc=$?
+tmux kill-session -t tpm-bootstrap
+exit "${rc:-0}"
