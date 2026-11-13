@@ -10,7 +10,6 @@ set -gx VISUAL nvim
 # Alias
 alias lg lazygit
 alias ld lazydocker
-alias "omp-personal" "omp --profile personal"
 # Alias end
 
 
