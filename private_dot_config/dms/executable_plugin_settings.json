@@ -1,0 +1,13 @@
+{
+  "dankBitwarden": {
+    "enabled": false,
+    "trigger": "",
+    "noTrigger": false
+  },
+  "bitwarden": {
+    "enabled": true
+  },
+  "quickCapture": {
+    "enabled": true
+  }
+}

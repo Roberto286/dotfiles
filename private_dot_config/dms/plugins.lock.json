@@ -1,0 +1,18 @@
+{
+  "lockfileVersion": 1,
+  "plugins": {
+    "bitwarden": {
+      "repo": "https://github.com/coldi1337/dms-bitwarden-cli",
+      "commit": "d449d6575e7f396361b2439cda65f2a70928923c"
+    },
+    "dankBitwarden": {
+      "repo": "https://github.com/pacman99/DankBitwarden",
+      "commit": "6fd83d8b6ab54d2d6a996bed7291b70316c99965"
+    },
+    "quickCapture": {
+      "repo": "https://github.com/hthienloc/dms-plugins",
+      "path": "quickCapture",
+      "commit": "9a083f11b49dca4e37b1e20dd953ca081d095169"
+    }
+  }
+}
