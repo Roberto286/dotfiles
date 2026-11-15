@@ -1,7 +1,7 @@
 {
   "currentThemeName": "custom",
   "currentThemeCategory": "registry",
-  "customThemeFile": "/var/home/roberto/.config/DankMaterialShell/themes/amoledNoir/theme.json",
+  "customThemeFile": "/var/home/roberto/.config/dms/themes/amoledNoir/theme.json",
   "registryThemeVariants": {
     "amoledNoir": {
       "dark": {
