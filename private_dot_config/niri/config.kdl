@@ -242,3 +242,4 @@ binds {
 }
 
 include "dms/windowrules.kdl"
+include "dms/binds.kdl"
