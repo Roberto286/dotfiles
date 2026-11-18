@@ -31,6 +31,7 @@ opencode = "latest"
 [settings]
 # Supply-chain cooldown: `latest` resolves only to releases at least 7 days old (npm/pipx deps included).
 minimum_release_age = "7d"
+idiomatic_version_file_enable_tools = ["node"]
 
 [settings.npm]
 package_manager = "npm"
