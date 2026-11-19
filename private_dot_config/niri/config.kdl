@@ -65,7 +65,10 @@ layout {
     }
 }
 
-spawn-at-startup "dms" "run"
+// DMS is started by the systemd user unit (dms.service, enabled in
+// graphical-session.target) so that Restart=on-failure brings it back after a
+// crash. Do not spawn it here as well.
+// spawn-at-startup "dms" "run"
 
 switch-events {
     lid-close { spawn "dms" "ipc" "lock" "lock"; }
