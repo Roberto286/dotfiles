@@ -19,7 +19,7 @@ uv = "latest"
 "npm:vscode-langservers-extracted" = "latest"
 "npm:@bitwarden/cli" = "latest"
 "pipx:basedpyright" = "latest"
-"pipx:headroom-ai" = { version = "latest", extras = "all", uvx_args = "--python 3.13" }
+"pipx:headroom-ai" = { version = "latest", extras = "all", uvx_args = "--python 3.14" }
 cargo-binstall = "latest"
 "pipx:ruff" = "latest"
 lazygit = "latest"
