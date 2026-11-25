@@ -16,13 +16,17 @@ function dev
     tmux new-window -t $session -n git
     tmux send-keys -t $session:git "lazygit" Enter
 
-    # claude
-    tmux new-window -t $session -n AI 
+    # AI
+    tmux new-window -t $session -n AI
+{{- if eq .chezmoi.os "linux" }}
+    tmux send-keys -t $session:AI "omp update && headroom wrap omp" Enter
+{{- else }}
     tmux send-keys -t $session:AI "claude update && headroom wrap claude" Enter
+{{- end }}
 
     # plain shell — land here on attach
     tmux new-window -t $session -n shell
-		tmux send-keys -t $session:shell "fish" Enter
+    tmux send-keys -t $session:shell "fish" Enter
 
     # Focus editor on attach
     tmux select-window -t $session:editor
