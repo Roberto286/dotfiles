@@ -890,7 +890,7 @@
       "showOnFullscreen": false,
       "openOnOverview": false,
       "groupByApp": true,
-      "separatePinnedAndRunningApps": true,
+      "separatePinnedAndRunningApps": false,
       "restoreSpecialWorkspaceOnClick": false,
       "isolateDisplays": false,
       "indicatorStyle": "circle",
@@ -927,7 +927,8 @@
           "widgetId": "appsDock",
           "enabled": true,
           "appsDockHideIndicators": false,
-          "appsDockColorizeActive": false
+          "appsDockColorizeActive": false,
+          "runningAppsCurrentWorkspace": false
         },
         {
           "id": "dock_trash",
