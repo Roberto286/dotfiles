@@ -246,5 +246,12 @@ binds {
     Mod+Shift+P { power-off-monitors; }
 }
 
+workspace "mail"
+
+window-rule {
+    match app-id="org.mozilla.thunderbird"
+    open-on-workspace "mail"
+}
+
 include "dms/windowrules.kdl"
 include "dms/binds.kdl"
