@@ -19,7 +19,7 @@ function dev
     # AI
     tmux new-window -t $session -n AI
 {{- if eq .chezmoi.os "linux" }}
-    tmux send-keys -t $session:AI "omp update && headroom wrap omp" Enter
+    tmux send-keys -t $session:AI "omp update && headroom wrap omp -- --profile personal" Enter
 {{- else }}
     tmux send-keys -t $session:AI "claude update && headroom wrap claude" Enter
 {{- end }}
