@@ -9,5 +9,8 @@
   },
   "quickCapture": {
     "enabled": true
+  },
+  "fawosUpdate": {
+    "enabled": true
   }
 }

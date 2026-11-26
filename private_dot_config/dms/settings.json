@@ -403,9 +403,8 @@
           "showScreenSharingIcon": true
         },
         {
-          "id": "systemUpdate",
-          "enabled": true,
-          "hideWhenIdle": true
+          "id": "fawosUpdate",
+          "enabled": true
         }
       ],
       "spacing": 4,

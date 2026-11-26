@@ -1,0 +1,12 @@
+{
+    "id": "fawosUpdate",
+    "name": "fawos Update",
+    "description": "Pending updates from `fawos-update --check`; click runs fawos-update in a terminal",
+    "version": "1.0.0",
+    "author": "roberto286",
+    "type": "widget",
+    "capabilities": ["dankbar-widget"],
+    "component": "./FawosUpdateWidget.qml",
+    "icon": "system_update_alt",
+    "permissions": []
+}
