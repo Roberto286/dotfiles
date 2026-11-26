@@ -72,6 +72,9 @@ layout {
 // already up, unlike a bare `dms run` which would give you a second shell.
 spawn-at-startup "systemctl" "--user" "start" "dms.service"
 
+// Thunderbird (flatpak) at login.
+spawn-at-startup "flatpak" "run" "org.mozilla.thunderbird"
+
 switch-events {
     lid-close { spawn "dms" "ipc" "lock" "lock"; }
 }
