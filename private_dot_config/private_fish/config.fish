@@ -10,6 +10,7 @@ set -gx VISUAL nvim
 # Alias
 alias lg lazygit
 alias ld lazydocker
+alias cd z
 # Alias end
 
 
